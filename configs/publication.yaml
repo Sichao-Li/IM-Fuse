@@ -1,0 +1,51 @@
+# IM-Fuse publication defaults.
+#
+# The command-line tools accept explicit arguments and save resolved configs
+# next to their outputs. This file documents the shared public defaults.
+
+project_name: IM-Fuse
+targets:
+  - average_voltage
+  - capacity_vol
+
+sample_id_col: id_discharge
+formula_col: formula_discharge
+working_ion_col: working_ion
+
+modalities:
+  composition: tabular
+  structure: structure
+  rdf: rdf
+
+seeds: [0, 1, 2, 3, 4]
+split_root: data/splits/publication
+processed_root: data/processed/legacy_rdf_split_seed_42
+raw_data: data/raw/mp_total.csv
+cif_dir: data/raw/cifs
+
+publication_models:
+  unimodal:
+    - tabular
+    - structure
+    - rdf
+  dual_fusion:
+    - rdf_tabular
+    - rdf_structure
+    - tabular_structure
+  tri_fusion:
+    - early_tri
+    - mid_tri
+    - late_tri
+
+baselines:
+  composition:
+    - random_forest
+    - xgboost
+  structure:
+    - alignn_pretrained_rf
+
+default_training:
+  epochs: 1000
+  early_stopping_patience: 100
+  batch_size: 256
+  target_transform: none

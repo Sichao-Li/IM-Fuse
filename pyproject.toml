@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "im-fuse"
+version = "0.1.0"
+description = "Interpretable multimodal fusion framework for battery materials."
+requires-python = ">=3.10"
+dependencies = [
+  "chemparse",
+  "matplotlib",
+  "numpy",
+  "pandas",
+  "pymatgen",
+  "rdfpy",
+  "scikit-learn",
+  "torch",
+]
+
+[project.optional-dependencies]
+classical = [
+  "xgboost",
+]
+data = [
+  "mp-api",
+]
+alignn = [
+  "alignn",
+]
+
+[project.scripts]
+imfuse = "battery_fusion.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

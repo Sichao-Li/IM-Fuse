@@ -1,0 +1,16 @@
+# Reference config for revision experiments.
+# The current command-line scripts accept explicit arguments and also store
+# their resolved settings next to each result table. This file documents the
+# intended shared defaults for the voltage task.
+task_name: m3fuse_voltage
+target_col: average_voltage
+sample_id_col: id_discharge
+formula_col: formula_discharge
+working_ion_col: working_ion
+processed_root: data/processed/split_seed_42
+modalities:
+  composition: tabular
+  graph: structure
+  rdf: rdf
+default_fusion: early
+seeds: [0, 1, 2, 3, 4]

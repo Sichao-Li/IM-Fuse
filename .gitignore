@@ -1,0 +1,42 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.venv*/
+*.egg-info/
+
+# Local execution artifacts
+logs/
+outputs/
+_local_archive/
+id_prop.csv*_data/
+*.pt
+*.pth
+*.pkl
+*.npy
+*.npz
+
+# Large or redistribution-sensitive inputs
+data/raw/
+data/processed/
+
+# Generated model outputs. Public users should reproduce these locally; large
+# outputs/checkpoints can live in an external artifact release when needed.
+results/
+figures/
+results/predictions/
+results/**/checkpoints/
+results/**/models/
+results/**/embeddings/
+results/**/pretrained_features/
+results/**/alignn_runs/
+results/**/alignn_outputs/
+results/final_publication/alignn_pretrained_features/
+
+# Exploratory or non-retained reruns
+results/debug*/
+results/*smoke*/
+results/final_publication_target_standardi?ed/
+results/gated_fusion_trial_target_standardi?ed/
+results/predictions_target_standardi?ed/
+results/predictions_gated_fusion_trial_target_standardi?ed/

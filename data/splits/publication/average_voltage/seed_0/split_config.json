@@ -1,0 +1,11 @@
+{
+  "n_samples": 8088,
+  "n_test": 810,
+  "n_train": 6470,
+  "n_val": 808,
+  "seed": 0,
+  "target_col": "average_voltage",
+  "test_ratio": 0.1,
+  "train_ratio": 0.8,
+  "val_ratio": 0.1
+}
