@@ -30,7 +30,7 @@ class FeatureBuilderTests(unittest.TestCase):
         self.assertEqual(rdf.shape, (16,))
         self.assertTrue(np.isfinite(rdf).all())
 
-    def test_rdf_vector_uses_legacy_raw_rdfpy_scale(self) -> None:
+    def test_rdf_vector_uses_publication_raw_rdfpy_scale(self) -> None:
         structure = Structure(
             Lattice.cubic(4.0),
             ["Li", "O"],

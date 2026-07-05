@@ -433,7 +433,6 @@ def plot_figure_b(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) ->
         ax.set_yticks(y, subset["condition_label"])
         ax.set_xlabel(f"MAE increase vs full ({TARGET_UNITS[target]})")
         _clean_axes(ax)
-    # fig.text(0.004, 0.99, "B", fontsize=12, fontweight="bold", va="top")
     save_figure(fig, output_dir / "figure_b_modality_dropout_delta_mae", overwrite)
     plt.close(fig)
 
@@ -508,7 +507,6 @@ def plot_figure_d(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) ->
     cbar = fig.colorbar(images[0], ax=axes.ravel().tolist(), shrink=0.72, pad=0.015, extend="both")
     cbar.ax.tick_params(length=2, width=0.5, labelsize=6.5)
     cbar.set_label(r"$\Delta$MAE vs best non-fusion (%)", fontsize=7)
-    # fig.text(0.004, 0.99, "D", fontsize=12, fontweight="bold", va="top")
     save_figure(fig, output_dir / "figure_d_subgroup_delta_mae_heatmap", overwrite)
     plt.close(fig)
 
@@ -593,7 +591,6 @@ def plot_figure_d2(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) -
     cbar = fig.colorbar(images[0], ax=axes.ravel().tolist(), shrink=0.72, pad=0.015)
     cbar.ax.tick_params(length=2, width=0.5, labelsize=6.5)
     cbar.set_label("Fusion win rate vs unimodal branches (%)", fontsize=7)
-    # fig.text(0.004, 0.99, "D2", fontsize=12, fontweight="bold", va="top")
     save_figure(fig, output_dir / "figure_d2_fusion_subgroup_win_rate", overwrite)
     plt.close(fig)
 
@@ -631,7 +628,6 @@ def plot_figure_d3(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) -
     cbar = fig.colorbar(images[0], ax=axes.ravel().tolist(), shrink=0.72, pad=0.015)
     cbar.ax.tick_params(length=2, width=0.5, labelsize=6.5)
     cbar.set_label("Fusion win rate vs comparator (%)", fontsize=7)
-    # fig.text(0.004, 0.99, "D3", fontsize=12, fontweight="bold", va="top")
     save_figure(fig, output_dir / "figure_d3_fusion_baseline_win_rate", overwrite)
     plt.close(fig)
 
@@ -690,8 +686,8 @@ def build_and_plot(
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Render retained modality-dropout and subgroup figures.")
     parser.add_argument("--results_root", type=Path, default=Path("results/final_publication"))
-    parser.add_argument("--output_dir", type=Path, default=Path("figures/final_publication/cell_reports"))
-    parser.add_argument("--data_output_dir", type=Path, default=Path("results/final_publication/cell_reports_figure_data"))
+    parser.add_argument("--output_dir", type=Path, default=Path("figures/final_publication/main"))
+    parser.add_argument("--data_output_dir", type=Path, default=Path("results/final_publication/figure_data"))
     parser.add_argument("--modality_dropout_dir", default="modality_dropout_mid_tri")
     parser.add_argument("--fusion_model", default=FUSION_MODEL)
     parser.add_argument("--overwrite", action="store_true")

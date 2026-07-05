@@ -61,11 +61,6 @@ MANIFEST_ROOTS = [
 ]
 
 MANIFEST_EXCLUDE_PATTERNS = [
-    "m3" + "gnet",
-    "mat" + "gl",
-    "target_" + "standardized",
-    "standard" + "ized",
-    "gated_fusion",
     "alignn_runs",
     "alignn_outputs",
     "diagnostic",

@@ -292,7 +292,7 @@ def run_modality_dropout(
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate inference-time modality dropout.")
-    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/legacy_rdf_split_seed_42"))
+    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--checkpoint_dir", type=Path, required=True)
     parser.add_argument("--split_dir", type=Path, required=True)
     parser.add_argument("--output_dir", type=Path, required=True)

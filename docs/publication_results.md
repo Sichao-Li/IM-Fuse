@@ -18,10 +18,10 @@ public result interface for the manuscript.
 
 | Output | Purpose |
 | --- | --- |
-| `figures/final_publication/cell_reports/figure_b_modality_dropout_delta_mae.pdf` | MAE increase after inference-time modality dropout. |
-| `figures/final_publication/cell_reports/figure_d_subgroup_delta_mae_heatmap.pdf` | Subgroup MAE deltas relative to the best non-fusion comparator. |
-| `figures/final_publication/cell_reports/figure_d2_fusion_subgroup_win_rate.pdf` | Fusion win rate against unimodal branches. |
-| `figures/final_publication/cell_reports/figure_d3_fusion_baseline_win_rate.pdf` | Fusion win rate against neural, classical, and pretrained baselines. |
+| `figures/final_publication/main/figure_b_modality_dropout_delta_mae.pdf` | MAE increase after inference-time modality dropout. |
+| `figures/final_publication/main/figure_d_subgroup_delta_mae_heatmap.pdf` | Subgroup MAE deltas relative to the best non-fusion comparator. |
+| `figures/final_publication/main/figure_d2_fusion_subgroup_win_rate.pdf` | Fusion win rate against unimodal branches. |
+| `figures/final_publication/main/figure_d3_fusion_baseline_win_rate.pdf` | Fusion win rate against neural, classical, and pretrained baselines. |
 | `figures/final_publication/parity_plots/` | Train/test parity plots by target, split, and model. |
 
 ## OOD Result Root

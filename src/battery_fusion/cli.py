@@ -25,7 +25,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
     "dropout": ("battery_fusion.experiments.modality_dropout", "Evaluate inference-time modality dropout."),
     "subgroups": ("battery_fusion.experiments.subgroups", "Compute anion-family and working-ion subgroup metrics."),
     "tables": ("battery_fusion.experiments.final_publication_tables", "Build final publication summary tables."),
-    "figures": ("battery_fusion.experiments.cell_reports_figures", "Generate publication B/C/D figures."),
+    "figures": ("battery_fusion.experiments.publication_figures", "Generate publication figures."),
     "parity": ("battery_fusion.experiments.parity_plots", "Generate train/test parity plots."),
     "explain-composition": ("battery_fusion.explain.composition_importance", "Run composition perturbation attributions."),
     "explain-fusion": ("battery_fusion.explain.fusion_importance", "Run multimodal fusion attributions."),
@@ -54,7 +54,7 @@ def _print_help() -> None:
     print("  imfuse train --target_col average_voltage --seeds 0 1 2 3 4 ...")
     print("  imfuse dropout --target_name average_voltage --seeds 0 1 2 3 4 ...")
     print("  imfuse split-ood composition-cluster --target_col average_voltage ...")
-    print("  imfuse figures --output_dir figures/final_publication/cell_reports")
+    print("  imfuse figures --output_dir figures/final_publication/main")
 
 
 def _run_module(command: str, args: Sequence[str]) -> int:

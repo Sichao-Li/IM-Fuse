@@ -11,7 +11,7 @@ Place external data at:
 data/raw/mp_total.csv
 data/raw/cifs/*.cif
 data/raw/atom_init.json
-data/processed/legacy_rdf_split_seed_42/
+data/processed/publication/
 ```
 
 To rebuild the raw inputs and processed modality caches from an external

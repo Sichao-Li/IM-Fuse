@@ -831,7 +831,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--target_col", choices=["average_voltage", "capacity_vol"], required=True)
     parser.add_argument("--input_root", type=Path, required=True)
     parser.add_argument("--output_dir", type=Path, required=True)
-    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/legacy_rdf_split_seed_42"))
+    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--split_dir", type=Path, default=Path("data/splits/publication"))
     parser.add_argument("--checkpoint_path", type=Path, default=None)
     parser.add_argument("--seed", type=int, default=0)

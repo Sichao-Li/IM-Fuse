@@ -21,7 +21,7 @@ def run_fis_explainer(
     output: torch.Tensor,
     config: GRSConfig = GRSConfig(),
 ) -> Any:
-    """Run the legacy GRS/FIS explainer with default notebook parameters."""
+    """Run the GRS/FIS explainer with the publication notebook parameters."""
     try:
         import generalized_rashomon_set as grs
     except ImportError as exc:

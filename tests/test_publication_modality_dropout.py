@@ -4,7 +4,7 @@ from battery_fusion.experiments.modality_dropout import modality_dropout_conditi
 
 
 class PublicationModalityDropoutTests(unittest.TestCase):
-    def test_publication_dropout_conditions_match_revision_protocol(self) -> None:
+    def test_publication_dropout_conditions_match_documented_protocol(self) -> None:
         conditions = modality_dropout_conditions()
         by_name = {condition.name: condition.available_modalities for condition in conditions}
 

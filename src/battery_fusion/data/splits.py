@@ -76,7 +76,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Create a deterministic split manifest.")
     parser.add_argument(
-        "--labels", type=Path, default=Path("data/labels/labels_keep_last.csv")
+        "--labels", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv")
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--train", type=float, default=0.8)

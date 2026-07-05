@@ -39,7 +39,7 @@ class ModelTests(unittest.TestCase):
         output = model(torch.ones(3, 400))
         self.assertEqual(tuple(output.shape), (3,))
 
-    def test_rdf_lstm_uses_legacy_400_feature_sequence_encoder(self) -> None:
+    def test_rdf_lstm_uses_publication_400_feature_sequence_encoder(self) -> None:
         model = RdfLSTMRegressor(input_size=400, hidden_size=8, output_size=1)
 
         self.assertEqual(model.lstm_cell.input_size, 400)

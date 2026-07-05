@@ -20,7 +20,7 @@ DEFAULT_MODEL_NAME = "mid_tri_rdf_tabular_structure"
 
 
 class CleanFusionAdapter(nn.Module):
-    """Adapt clean publication fusion inputs to the legacy explanation wrapper."""
+    """Adapt publication fusion inputs to the explanation wrapper."""
 
     def __init__(self, model: nn.Module):
         super().__init__()
@@ -249,10 +249,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--target_col", choices=["average_voltage", "capacity_vol"], required=True)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--split", choices=["train", "val", "test"], default="test")
-    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/legacy_rdf_split_seed_42"))
+    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--split_dir", type=Path, default=Path("data/splits/publication"))
     parser.add_argument("--checkpoint_path", type=Path, default=None)
-    parser.add_argument("--labels_path", type=Path, default=Path("data/labels/labels_keep_last.csv"))
+    parser.add_argument("--labels_path", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv"))
     parser.add_argument("--output_dir", type=Path, default=Path("results/explanations/composition_importance"))
     parser.add_argument("--sample_id", default=None)
     parser.add_argument("--sample_index", type=int, default=0)

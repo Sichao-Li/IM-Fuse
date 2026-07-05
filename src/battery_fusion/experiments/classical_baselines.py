@@ -48,7 +48,7 @@ def build_composition_descriptor_frame(
 ) -> pd.DataFrame:
     """Build the original notebook tabular representation.
 
-    The legacy notebook calls this a "mendeleev" encoding, but it is simply
+    The original notebook calls this a "mendeleev" encoding, but it is simply
     a raw element-count matrix from ``chemparse.parse_formula``. Columns are
     aligned to the element vocabulary from the provided base formula pool.
     """

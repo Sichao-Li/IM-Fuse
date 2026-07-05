@@ -46,7 +46,7 @@ def configure_style() -> None:
 
 
 def standardize_like_plot_gth_pre(y_true: np.ndarray, y_pred: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Match the legacy vis.plot_gth_pre convention: standardize y_true and y_pred separately."""
+    """Match the original plot_gth_pre convention: standardize y_true and y_pred separately."""
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
     eps = 1e-12

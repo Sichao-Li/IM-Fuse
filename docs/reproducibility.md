@@ -41,7 +41,7 @@ Random-split uni/dual/tri neural matrix:
 
 ```bash
 imfuse train \
-  --processed_root data/processed/legacy_rdf_split_seed_42 \
+  --processed_root data/processed/publication \
   --raw_data data/raw/mp_total.csv \
   --target_col average_voltage \
   --split_dir data/splits/publication/average_voltage \
@@ -104,7 +104,7 @@ Repeat the same commands with `capacity_vol` paths for the capacity task.
 ```bash
 imfuse dropout \
   --target_name average_voltage \
-  --processed_root data/processed/legacy_rdf_split_seed_42 \
+  --processed_root data/processed/publication \
   --checkpoint_dir results/final_publication/average_voltage/random_split/checkpoints/mid_tri_rdf_tabular_structure \
   --split_dir data/splits/publication/average_voltage \
   --output_dir results/final_publication/average_voltage/modality_dropout_mid_tri \
@@ -194,8 +194,8 @@ imfuse tables \
 
 imfuse figures \
   --results_root results/final_publication \
-  --output_dir figures/final_publication/cell_reports \
-  --data_output_dir results/final_publication/cell_reports_figure_data \
+  --output_dir figures/final_publication/main \
+  --data_output_dir results/final_publication/figure_data \
   --overwrite
 
 imfuse parity \

@@ -19,7 +19,7 @@ LEARNING_RATE="${LEARNING_RATE:-0.0005}"
 WEIGHT_DECAY="${WEIGHT_DECAY:-1e-5}"
 RDF_WEIGHT_DECAY="${RDF_WEIGHT_DECAY:-1e-4}"
 SCHEDULER_MILESTONE="${SCHEDULER_MILESTONE:-20}"
-PROCESSED_ROOT="${PROCESSED_ROOT:-data/processed/legacy_rdf_split_seed_42}"
+PROCESSED_ROOT="${PROCESSED_ROOT:-data/processed/publication}"
 RAW_DATA="${RAW_DATA:-data/raw/mp_total.csv}"
 CIF_DIR="${CIF_DIR:-data/raw/cifs}"
 RESULTS_ROOT="${RESULTS_ROOT:-results/final_publication}"
@@ -278,10 +278,10 @@ fi
 if [[ "${RUN_PLOTS}" == "1" ]]; then
   "${IMFUSE[@]}" figures \
     --results_root "${RESULTS_ROOT}" \
-    --output_dir "${FIGURES_ROOT}/cell_reports" \
-    --data_output_dir "${RESULTS_ROOT}/cell_reports_figure_data" \
+    --output_dir "${FIGURES_ROOT}/main" \
+    --data_output_dir "${RESULTS_ROOT}/figure_data" \
     ${OVERWRITE_FLAG} \
-    2>&1 | tee "${LOG_DIR}/cell_reports_figures.log"
+    2>&1 | tee "${LOG_DIR}/publication_figures.log"
 
   "${IMFUSE[@]}" parity \
     --predictions_root "${PREDICTIONS_ROOT}" \

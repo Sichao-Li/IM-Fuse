@@ -9,7 +9,7 @@ from torch import nn
 class FusionInputWrapper:
     """Build the perturbation matrix used by GRS/FIS for fusion inputs.
 
-    This preserves the legacy explanation convention:
+    This preserves the publication explanation convention:
     graph columns are whole atom feature vectors, tabular columns are scalar
     features, and RDF columns are scalar bins. Scalar modalities are padded with
     zeros so all modalities can be concatenated column-wise.

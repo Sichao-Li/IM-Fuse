@@ -19,7 +19,7 @@ def split_main_effects(
     n_atoms: int,
     n_tab_features: int = 76,
 ) -> MainEffectSplit:
-    """Split GRS main effects using the legacy graph, tabular, RDF order."""
+    """Split GRS main effects using the publication graph, tabular, RDF order."""
     effects = np.asarray(list(main_effects), dtype=float)
     graph_end = n_atoms
     tab_end = graph_end + n_tab_features
@@ -35,7 +35,7 @@ def interactions_to_frame(
 ) -> pd.DataFrame:
     """Convert interaction values to a min-max normalized DataFrame.
 
-    The normalization mirrors the old notebook: `(value - min) / (max - min)`.
+    The normalization mirrors the publication notebook: `(value - min) / (max - min)`.
     """
     items = interactions.items() if isinstance(interactions, Mapping) else interactions
     raw_items = list(items)

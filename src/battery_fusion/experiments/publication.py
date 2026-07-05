@@ -717,7 +717,7 @@ def run_publication_matrix(
     split_dir: Path,
     output_dir: Path,
     seeds: list[int],
-    labels_path: Path | None = Path("data/labels/labels_keep_last.csv"),
+    labels_path: Path | None = Path("data/sample_order/sample_order_keep_last.csv"),
     assignment_output: Path | None = None,
     train_ratio: float = 0.8,
     val_ratio: float = 0.1,
@@ -1144,12 +1144,12 @@ def run_publication_matrix(
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run clean publication training matrix.")
-    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/legacy_rdf_split_seed_42"))
+    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--raw_data", type=Path, default=Path("data/raw/mp_total.csv"))
     parser.add_argument("--target_col", choices=["average_voltage", "capacity_vol"], required=True)
     parser.add_argument("--split_dir", type=Path, required=True)
     parser.add_argument("--output_dir", type=Path, required=True)
-    parser.add_argument("--labels_path", type=Path, default=Path("data/labels/labels_keep_last.csv"))
+    parser.add_argument("--labels_path", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv"))
     parser.add_argument("--assignment_output", type=Path, default=None)
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     parser.add_argument("--train_ratio", type=float, default=0.8)

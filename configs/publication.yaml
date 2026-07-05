@@ -19,7 +19,8 @@ modalities:
 
 seeds: [0, 1, 2, 3, 4]
 split_root: data/splits/publication
-processed_root: data/processed/legacy_rdf_split_seed_42
+sample_order: data/sample_order/sample_order_keep_last.csv
+processed_root: data/processed/publication
 raw_data: data/raw/mp_total.csv
 cif_dir: data/raw/cifs
 

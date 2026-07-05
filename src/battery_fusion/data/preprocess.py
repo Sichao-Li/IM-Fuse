@@ -184,9 +184,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Preprocess cached modality tensors.")
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--split", type=Path, required=True)
-    parser.add_argument(
-        "--labels", type=Path, default=Path("data/labels/labels_keep_last.csv")
-    )
+    parser.add_argument("--labels", type=Path, required=True)
     parser.add_argument(
         "--modalities", nargs="+", default=["rdf", "tabular", "structure"]
     )

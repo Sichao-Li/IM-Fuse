@@ -36,7 +36,3 @@ results/final_publication/alignn_pretrained_features/
 # Exploratory or non-retained reruns
 results/debug*/
 results/*smoke*/
-results/final_publication_target_standardi?ed/
-results/gated_fusion_trial_target_standardi?ed/
-results/predictions_target_standardi?ed/
-results/predictions_gated_fusion_trial_target_standardi?ed/

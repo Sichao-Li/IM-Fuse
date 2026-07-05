@@ -56,8 +56,8 @@ Use `DEVICE=cuda` on a CUDA server.
 ## Public Layout
 
 ```text
-configs/                    # public defaults and manuscript config
-data/labels/                # compact one-row-per-sample label table
+configs/                    # public defaults
+data/sample_order/          # compact one-row-per-sample ID order table
 data/splits/                # fixed publication split CSVs
 docs/                       # data, framework, reproduction, and output notes
 scripts/                    # end-to-end reproduction scripts
@@ -78,11 +78,11 @@ For full reruns, place external artifacts at:
 data/raw/mp_total.csv
 data/raw/cifs/*.cif
 data/raw/atom_init.json
-data/processed/legacy_rdf_split_seed_42/
+data/processed/publication/
 ```
 
 To rebuild those artifacts from an external `mp_total.csv` and CIF release, see
-`docs/data_preparation.md`. The compact label table and split CSVs are included;
+`docs/data_preparation.md`. The compact sample-order table and split CSVs are included;
 see `docs/data_manifest.md` for retained artifact details.
 
 ## Command Map
@@ -119,7 +119,7 @@ The reproduction scripts generate summary tables and figures under:
 - `figures/final_publication/`
 
 These output folders are ignored by Git so users can reproduce them locally.
-`docs/publication_results.md` documents the expected manuscript output structure.
+`docs/publication_results.md` documents the expected output structure.
 
 ## Tests
 

@@ -188,10 +188,10 @@ def run_permutation_importance_matrix(
     output_dir: Path,
     split: str = "test",
     modalities: tuple[str, ...] = DEFAULT_MODALITIES,
-    processed_root: Path = Path("data/processed/legacy_rdf_split_seed_42"),
+    processed_root: Path = Path("data/processed/publication"),
     split_dir: Path = Path("data/splits/publication"),
     checkpoint_root: Path | None = None,
-    labels_path: Path = Path("data/labels/labels_keep_last.csv"),
+    labels_path: Path = Path("data/sample_order/sample_order_keep_last.csv"),
     sample_index: int = 0,
     max_samples: int | None = 100,
     rdf_group_size: int = 10,
@@ -288,10 +288,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2, 3, 4])
     parser.add_argument("--split", choices=["train", "val", "test"], default="test")
     parser.add_argument("--modalities", nargs="+", choices=list(DEFAULT_MODALITIES), default=list(DEFAULT_MODALITIES))
-    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/legacy_rdf_split_seed_42"))
+    parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--split_dir", type=Path, default=Path("data/splits/publication"))
     parser.add_argument("--checkpoint_root", type=Path, default=Path("results/final_publication"))
-    parser.add_argument("--labels_path", type=Path, default=Path("data/labels/labels_keep_last.csv"))
+    parser.add_argument("--labels_path", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv"))
     parser.add_argument("--output_dir", type=Path, default=Path("results/explanation_validation/permutation_matrix"))
     parser.add_argument("--sample_index", type=int, default=0)
     parser.add_argument("--max_samples", type=int, default=100)

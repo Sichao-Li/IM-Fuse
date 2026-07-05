@@ -12,12 +12,11 @@ def build_rdf_vector(
     noise_std: float = 0.01,
     noise_seed: int | None = 0,
 ) -> np.ndarray:
-    """Build the legacy fixed-length rdfpy RDF vector.
+    """Build the fixed-length rdfpy RDF vector used in the publication runs.
 
-    This intentionally preserves the previous project representation:
-    make a 5x supercell, compute rdfpy ``g(r)`` values, truncate/pad to
-    400 bins, and keep the raw scale. The raw scale is part of the legacy
-    signal and is not L1-normalized.
+    The representation makes a 5x supercell, computes rdfpy ``g(r)`` values,
+    truncates/pads to 400 bins, and keeps the raw scale rather than
+    L1-normalizing it.
     """
 
     _ = cutoff

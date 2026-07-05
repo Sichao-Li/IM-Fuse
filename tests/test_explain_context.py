@@ -28,7 +28,7 @@ class RecordingFusionModel(nn.Module):
 
 
 class ExplainContextTests(unittest.TestCase):
-    def test_build_input_preserves_old_mapping_order_and_padding(self) -> None:
+    def test_build_input_preserves_publication_mapping_order_and_padding(self) -> None:
         atom_fea = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
         tab = torch.tensor([[10.0, 20.0]])
         rdf = torch.tensor([[30.0, 40.0, 50.0]])
@@ -112,7 +112,7 @@ class ExplainContextTests(unittest.TestCase):
         self.assertEqual([entry["bin_indices"] for entry in mapping], [[0, 1], [2, 3], [4]])
         torch.testing.assert_close(model.last_batch["rdf_inputs"], torch.tensor([[1.0, 2.0, 3.0, 4.0, 5.0]]))
 
-    def test_split_main_effects_uses_old_graph_tab_rdf_boundaries(self) -> None:
+    def test_split_main_effects_uses_publication_graph_tab_rdf_boundaries(self) -> None:
         effects = list(range(2 + 3 + 4))
         split = split_main_effects(effects, n_atoms=2, n_tab_features=3)
 
