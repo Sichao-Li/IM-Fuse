@@ -51,18 +51,9 @@ RANDOM_MODEL_ORDER = [
     "alignn_pretrained_rf",
 ]
 
-HOLDOUT_MODEL_ORDER = [
-    "composition",
-    "random_forest",
-    "xgboost",
-    "graph",
-    "composition_graph",
-    "full_fusion",
-    "alignn_pretrained_rf",
-]
-
 MANIFEST_ROOTS = [
     Path("results/final_publication"),
+    Path("results/final_publication_ood"),
     Path("results/predictions"),
     Path("results/explanation_validation"),
     Path("figures/final_publication"),
@@ -75,7 +66,6 @@ MANIFEST_EXCLUDE_PATTERNS = [
     "target_" + "standardized",
     "standard" + "ized",
     "gated_fusion",
-    "alignn_anion_holdout",
     "alignn_runs",
     "alignn_outputs",
     "diagnostic",
@@ -454,60 +444,59 @@ def build_experiment_b_summary(results_root: Path) -> pd.DataFrame:
     return pd.concat(rows, ignore_index=True, sort=False)[columns]
 
 
-def build_experiment_c_summary(results_root: Path) -> pd.DataFrame:
+def _ood_scenario_from_path(path: Path, ood_results_root: Path) -> tuple[str, str, str]:
+    rel = path.relative_to(ood_results_root)
+    parts = rel.parts
+    target = parts[0]
+    protocol = parts[1]
+    if protocol == "composition_cluster_holdout":
+        cluster = parts[3].replace("cluster_", "")
+        return target, "composition_cluster_holdout", f"composition_cluster_{cluster}"
+    if protocol == "working_ion_holdout":
+        ions = parts[2]
+        return target, "working_ion_holdout", f"working_ion_{ions}"
+    raise ValueError(f"Unrecognized OOD result path: {path}")
+
+
+def _ood_source_from_path(path: Path) -> str:
+    if path.name == "publication_metrics.csv":
+        return "neural/fusion"
+    if path.name == "classical_baseline_metrics.csv":
+        return SOURCE_LABELS["classical"]
+    if path.name == "alignn_pretrained_rf_metrics.csv":
+        return SOURCE_LABELS["alignn_pretrained"]
+    return "unknown"
+
+
+def build_experiment_c_summary(ood_results_root: Path) -> pd.DataFrame:
     rows: list[pd.DataFrame] = []
-    for target in TARGETS:
-        target_dir = results_root / target
-        holdout_path = target_dir / "anion_holdout_halide" / "anion_holdout_metrics.csv"
-        if holdout_path.exists():
-            holdout = _metric_summary(
-                pd.read_csv(holdout_path),
-                ["heldout_family", "model_name", "modality_set"],
-                split=None,
-            )
-            holdout["target"] = target
-            holdout["source"] = "neural/fusion"
-            rows.append(holdout)
-
-        classical_path = (
-            target_dir
-            / "classical_anion_holdout_halide"
-            / "classical_baseline_metrics.csv"
-        )
-        if classical_path.exists():
-            classical = _metric_summary(
-                pd.read_csv(classical_path),
-                ["model_name", "modality_set"],
-                split="test",
-            )
-            classical["target"] = target
-            classical["heldout_family"] = "halide"
-            classical["source"] = SOURCE_LABELS["classical"]
-            rows.append(classical)
-
-        alignn_path = (
-            target_dir
-            / "alignn_pretrained_anion_holdout_halide"
-            / "alignn_pretrained_rf_metrics.csv"
-        )
-        if alignn_path.exists():
-            alignn = _metric_summary(
-                pd.read_csv(alignn_path),
-                ["model_name", "modality_set"],
-                split="test",
-            )
-            alignn["target"] = target
-            alignn["heldout_family"] = "halide"
-            alignn["source"] = SOURCE_LABELS["alignn_pretrained"]
-            rows.append(alignn)
+    ood_results_root = Path(ood_results_root)
+    if not ood_results_root.exists():
+        return pd.DataFrame()
+    for metric_path in sorted(ood_results_root.rglob("*metrics.csv")):
+        try:
+            target, protocol, scenario = _ood_scenario_from_path(metric_path, ood_results_root)
+        except ValueError:
+            continue
+        metrics = pd.read_csv(metric_path)
+        metrics = metrics[metrics["split"].astype(str).str.lower() == "test"].copy()
+        if metrics.empty:
+            continue
+        summary = _metric_summary(metrics, ["model_name", "modality_set"], split=None)
+        summary["target"] = target
+        summary["ood_protocol"] = protocol
+        summary["ood_scenario"] = scenario
+        summary["source"] = _ood_source_from_path(metric_path)
+        rows.append(summary)
 
     if not rows:
         return pd.DataFrame()
     summary = pd.concat(rows, ignore_index=True, sort=False)
-    summary = _append_order_and_labels(summary, order=HOLDOUT_MODEL_ORDER)
+    summary = _append_order_and_labels(summary, order=RANDOM_MODEL_ORDER)
     columns = [
         "target",
-        "heldout_family",
+        "ood_protocol",
+        "ood_scenario",
         "source",
         "model_name",
         "model_label",
@@ -522,7 +511,9 @@ def build_experiment_c_summary(results_root: Path) -> pd.DataFrame:
         "R2_std",
         "sort_order",
     ]
-    return summary[columns].sort_values(["target", "sort_order"]).reset_index(drop=True)
+    return summary[columns].sort_values(
+        ["target", "ood_protocol", "ood_scenario", "sort_order"]
+    ).reset_index(drop=True)
 
 
 def build_experiment_d_summary(results_root: Path) -> pd.DataFrame:
@@ -666,12 +657,17 @@ def build_publication_manifest() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def build_all_tables(results_root: Path, output_dir: Path, overwrite: bool = False) -> dict[str, Path]:
+def build_all_tables(
+    results_root: Path,
+    output_dir: Path,
+    overwrite: bool = False,
+    ood_results_root: Path = Path("results/final_publication_ood"),
+) -> dict[str, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     tables = {
         "publication_random_split_summary.csv": build_random_split_summary(results_root),
         "publication_experiment_b_modality_dropout_summary.csv": build_experiment_b_summary(results_root),
-        "publication_experiment_c_halide_holdout_summary.csv": build_experiment_c_summary(results_root),
+        "publication_experiment_c_ood_summary.csv": build_experiment_c_summary(ood_results_root),
         "publication_experiment_d_subgroup_summary.csv": build_experiment_d_summary(results_root),
         "publication_manifest.csv": build_publication_manifest(),
     }
@@ -699,6 +695,11 @@ def _parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("results/final_publication"),
     )
+    parser.add_argument(
+        "--ood_results_root",
+        type=Path,
+        default=Path("results/final_publication_ood"),
+    )
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
 
@@ -708,6 +709,7 @@ def main() -> None:
     build_all_tables(
         results_root=args.results_root,
         output_dir=args.output_dir,
+        ood_results_root=args.ood_results_root,
         overwrite=args.overwrite,
     )
 

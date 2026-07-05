@@ -31,9 +31,9 @@ bash scripts/reproduce_publication.sh
 ```
 
 The runner executes the random-split neural matrix, RF/XGBoost baselines,
-pretrained ALIGNN+RF, Experiment B modality dropout, Experiment C halide
-holdout, Experiment D subgroup analysis, summary tables, Cell Reports-style
-figures, and train/test parity plots.
+pretrained ALIGNN+RF, Experiment B modality dropout, Experiment C OOD audits,
+Experiment D subgroup analysis, summary tables, retained manuscript figures,
+and train/test parity plots.
 
 ## Core Commands
 
@@ -116,48 +116,54 @@ imfuse dropout \
   --overwrite
 ```
 
-## Experiment C: Halide Holdout
+## Experiment C: OOD Audits
 
-Create or verify splits:
+The retained OOD audit has two protocols:
+
+- composition-cluster holdout: KMeans in composition-count feature space,
+  default `K=3`, no target labels used for clustering;
+- working-ion holdout: Na holdout and Mg/Ca/Zn multivalent holdout.
+
+Run all retained OOD scenarios for both targets:
 
 ```bash
-imfuse split \
+DEVICE=mps bash scripts/run_ood_publication.sh
+```
+
+By default the OOD script uses seed `0`, matching the manuscript OOD table. To
+run more seeds:
+
+```bash
+OOD_SEEDS="0 1 2 3 4" DEVICE=mps bash scripts/run_ood_publication.sh
+```
+
+Create only the split files:
+
+```bash
+imfuse split-ood composition-cluster \
   --input_data data/raw/mp_total.csv \
   --sample_id_col id_discharge \
   --formula_col formula_discharge \
   --target_col average_voltage \
   --working_ion_col working_ion \
-  --heldout_family halide \
-  --output_dir data/splits/publication_anion_holdout/average_voltage/halide \
-  --assignment_output results/final_publication/average_voltage/random_split/anion_family_assignments.csv \
-  --seeds 0 1 2 3 4 \
-  --min_test_samples 100 \
+  --output_dir data/splits/publication_ood/composition_cluster_holdout/average_voltage/k_3 \
+  --seeds 0 \
+  --n_clusters 3 \
+  --min_test_size 50 \
+  --overwrite
+
+imfuse split-ood working-ion \
+  --input_data data/raw/mp_total.csv \
+  --sample_id_col id_discharge \
+  --formula_col formula_discharge \
+  --target_col average_voltage \
+  --working_ion_col working_ion \
+  --heldout_ions Mg Ca Zn \
+  --output_dir data/splits/publication_ood/working_ion_holdout/average_voltage/Mg_Ca_Zn \
+  --seeds 0 \
+  --min_test_size 50 \
   --overwrite
 ```
-
-Run the retained holdout neural models:
-
-```bash
-imfuse holdout \
-  --processed_root data/processed/legacy_rdf_split_seed_42 \
-  --split_dir data/splits/publication_anion_holdout/average_voltage/halide \
-  --models composition graph composition_graph full_fusion \
-  --output_dir results/final_publication/average_voltage/anion_holdout_halide \
-  --seeds 0 1 2 3 4 \
-  --fusion mid \
-  --epochs 1000 \
-  --batch_size 256 \
-  --learning_rate 0.0005 \
-  --device mps \
-  --early_stopping_patience 100 \
-  --target_transform none \
-  --predictions_root results/predictions/final_publication_anion_holdout/average_voltage \
-  --overwrite
-```
-
-Run RF/XGBoost and ALIGNN+RF on the same holdout split by reusing
-`imfuse baseline-classical` and `imfuse baseline-alignn` with
-`--split_dir data/splits/publication_anion_holdout/average_voltage/halide`.
 
 ## Experiment D: Subgroup Analysis
 
@@ -182,6 +188,7 @@ Use the same command for classical and ALIGNN+RF predictions by changing
 ```bash
 imfuse tables \
   --results_root results/final_publication \
+  --ood_results_root results/final_publication_ood \
   --output_dir results/final_publication \
   --overwrite
 

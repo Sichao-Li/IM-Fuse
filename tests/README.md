@@ -10,7 +10,7 @@ datasets:
 - fusion dataset collation,
 - model and training smoke tests,
 - classical composition baselines,
-- subgroup and modality-dropout metric utilities,
+- OOD split creation, subgroup metrics, and modality-dropout utilities,
 - core attribution and faithfulness helpers.
 
 It does not try to regression-test every manuscript figure, summary table, or

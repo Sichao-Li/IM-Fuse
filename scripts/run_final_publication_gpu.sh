@@ -7,17 +7,14 @@ CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 SEEDS="${SEEDS:-0 1 2 3 4}"
 TARGETS="${TARGETS:-average_voltage capacity_vol}"
 MODELS="${MODELS:-unimodal_rdf_sequence unimodal_tabular unimodal_structure late_dual_rdf_tabular late_dual_rdf_structure late_dual_tabular_structure early_tri_rdf_tabular_structure mid_tri_rdf_tabular_structure late_tri_rdf_tabular_structure}"
-ANION_MODELS="${ANION_MODELS:-composition graph composition_graph full_fusion}"
 TARGET_TRANSFORM="${TARGET_TRANSFORM:-none}"
 MAX_EPOCHS="${MAX_EPOCHS:-1000}"
 RDF_EPOCHS="${RDF_EPOCHS:-1000}"
 TABULAR_EPOCHS="${TABULAR_EPOCHS:-1000}"
 STRUCTURE_EPOCHS="${STRUCTURE_EPOCHS:-1000}"
 TRI_EPOCHS="${TRI_EPOCHS:-1000}"
-ANION_EPOCHS="${ANION_EPOCHS:-1000}"
 EARLY_STOPPING_PATIENCE="${EARLY_STOPPING_PATIENCE:-100}"
 BATCH_SIZE="${BATCH_SIZE:-256}"
-ANION_BATCH_SIZE="${ANION_BATCH_SIZE:-256}"
 LEARNING_RATE="${LEARNING_RATE:-0.0005}"
 WEIGHT_DECAY="${WEIGHT_DECAY:-1e-5}"
 RDF_WEIGHT_DECAY="${RDF_WEIGHT_DECAY:-1e-4}"
@@ -48,6 +45,10 @@ DROPOUT_MODEL_NAME="${DROPOUT_MODEL_NAME:-mid_tri_rdf_tabular_structure}"
 DROPOUT_OUTPUT_DIR_NAME="${DROPOUT_OUTPUT_DIR_NAME:-}"
 MAX_TRAIN_SAMPLES="${MAX_TRAIN_SAMPLES:-}"
 MAX_EVAL_SAMPLES="${MAX_EVAL_SAMPLES:-}"
+OOD_SEEDS="${OOD_SEEDS:-0}"
+OOD_RESULTS_ROOT="${OOD_RESULTS_ROOT:-results/final_publication_ood}"
+OOD_SPLIT_ROOT="${OOD_SPLIT_ROOT:-data/splits/publication_ood}"
+OOD_LOG_DIR="${OOD_LOG_DIR:-logs/publication_ood}"
 OVERWRITE_FLAG="${OVERWRITE_FLAG:---overwrite}"
 
 export CUDA_VISIBLE_DEVICES
@@ -74,7 +75,6 @@ fi
 read -r -a SEED_ARGS <<< "${SEEDS}"
 read -r -a TARGET_ARGS <<< "${TARGETS}"
 read -r -a MODEL_ARGS <<< "${MODELS}"
-read -r -a ANION_MODEL_ARGS <<< "${ANION_MODELS}"
 read -r -a ALIGNN_PRETRAINED_MODEL_ARGS <<< "${ALIGNN_PRETRAINED_MODELS}"
 
 if [[ -z "${DROPOUT_OUTPUT_DIR_NAME}" ]]; then
@@ -192,67 +192,6 @@ for target in "${TARGET_ARGS[@]}"; do
 
   fi
 
-  if [[ "${RUN_EXPERIMENT_C}" == "1" ]]; then
-    "${IMFUSE[@]}" holdout \
-      --processed_root "${PROCESSED_ROOT}" \
-      --split_dir "data/splits/publication_anion_holdout/${target}/halide" \
-      --models "${ANION_MODEL_ARGS[@]}" \
-      --output_dir "${RESULTS_ROOT}/${target}/anion_holdout_halide" \
-      --seeds "${SEED_ARGS[@]}" \
-      --fusion mid \
-      --epochs "${ANION_EPOCHS}" \
-      --batch_size "${ANION_BATCH_SIZE}" \
-      --learning_rate "${LEARNING_RATE}" \
-      --device "${DEVICE}" \
-      --early_stopping_patience "${EARLY_STOPPING_PATIENCE}" \
-      --target_transform "${TARGET_TRANSFORM}" \
-      ${optional_limit_args[@]+"${optional_limit_args[@]}"} \
-      --predictions_root "${PREDICTIONS_ROOT}/final_publication_anion_holdout/${target}" \
-      ${OVERWRITE_FLAG} \
-      2>&1 | tee "${LOG_DIR}/${target}_experiment_c_halide_holdout.log"
-
-    if [[ "${RUN_CLASSICAL}" == "1" ]]; then
-      classical_args=()
-      if [[ "${INCLUDE_XGBOOST}" == "1" ]]; then
-        classical_args+=(--include_xgboost)
-      fi
-      "${IMFUSE[@]}" baseline-classical \
-        --split_dir "data/splits/publication_anion_holdout/${target}/halide" \
-        --output_dir "${RESULTS_ROOT}/${target}/classical_anion_holdout_halide" \
-        --target_col "${target}" \
-        --experiment_name final_publication_classical_anion_holdout \
-        --predictions_root "${PREDICTIONS_ROOT}" \
-        --seeds "${SEED_ARGS[@]}" \
-        --n_estimators 500 \
-        --n_jobs -1 \
-        --vocabulary_csv "${RAW_DATA}" \
-        --vocabulary_formula_col formula_discharge \
-        ${classical_args[@]+"${classical_args[@]}"} \
-        ${OVERWRITE_FLAG} \
-        2>&1 | tee "${LOG_DIR}/${target}_experiment_c_classical_halide_holdout.log"
-    fi
-
-    if [[ "${RUN_ALIGNN_PRETRAINED}" == "1" ]]; then
-      "${IMFUSE[@]}" baseline-alignn \
-        --split_dir "data/splits/publication_anion_holdout/${target}/halide" \
-        --cif_dir "${CIF_DIR}" \
-        --output_dir "${RESULTS_ROOT}/${target}/alignn_pretrained_anion_holdout_halide" \
-        --target_col "${target}" \
-        --seeds "${SEED_ARGS[@]}" \
-        --pretrained_models "${ALIGNN_PRETRAINED_MODEL_ARGS[@]}" \
-        --feature_mode "${ALIGNN_PRETRAINED_FEATURE_MODE}" \
-        --feature_cache_dir "${ALIGNN_PRETRAINED_FEATURE_CACHE_DIR}" \
-        --experiment_name final_publication_alignn_pretrained_anion_holdout \
-        --predictions_root "${PREDICTIONS_ROOT}" \
-        --alignn_python "${ALIGNN_PYTHON:-.venv-alignn/bin/python}" \
-        --file_format "${ALIGNN_FILE_FORMAT}" \
-        --n_estimators 500 \
-        --n_jobs -1 \
-        ${OVERWRITE_FLAG} \
-        2>&1 | tee "${LOG_DIR}/${target}_experiment_c_alignn_pretrained_halide_holdout.log"
-    fi
-  fi
-
   if [[ "${RUN_EXPERIMENT_D}" == "1" ]]; then
     "${IMFUSE[@]}" subgroups \
       --predictions_dir "${PREDICTIONS_ROOT}/final_publication_random/${target}" \
@@ -291,9 +230,46 @@ for target in "${TARGET_ARGS[@]}"; do
   fi
 done
 
+if [[ "${RUN_EXPERIMENT_C}" == "1" ]]; then
+  TARGETS="${TARGETS}" \
+  OOD_SEEDS="${OOD_SEEDS}" \
+  DEVICE="${DEVICE}" \
+  PYTHON="${PYTHON}" \
+  PROCESSED_ROOT="${PROCESSED_ROOT}" \
+  RAW_DATA="${RAW_DATA}" \
+  CIF_DIR="${CIF_DIR}" \
+  SPLIT_ROOT="${OOD_SPLIT_ROOT}" \
+  RESULTS_ROOT="${OOD_RESULTS_ROOT}" \
+  PREDICTIONS_ROOT="${PREDICTIONS_ROOT}" \
+  LOG_DIR="${OOD_LOG_DIR}" \
+  MODELS="${MODELS}" \
+  MAX_EPOCHS="${MAX_EPOCHS}" \
+  RDF_EPOCHS="${RDF_EPOCHS}" \
+  TABULAR_EPOCHS="${TABULAR_EPOCHS}" \
+  STRUCTURE_EPOCHS="${STRUCTURE_EPOCHS}" \
+  TRI_EPOCHS="${TRI_EPOCHS}" \
+  EARLY_STOPPING_PATIENCE="${EARLY_STOPPING_PATIENCE}" \
+  BATCH_SIZE="${BATCH_SIZE}" \
+  LEARNING_RATE="${LEARNING_RATE}" \
+  WEIGHT_DECAY="${WEIGHT_DECAY}" \
+  RDF_WEIGHT_DECAY="${RDF_WEIGHT_DECAY}" \
+  SCHEDULER_MILESTONE="${SCHEDULER_MILESTONE}" \
+  RUN_NEURAL="${RUN_RANDOM}" \
+  RUN_CLASSICAL="${RUN_CLASSICAL}" \
+  RUN_ALIGNN_PRETRAINED="${RUN_ALIGNN_PRETRAINED}" \
+  INCLUDE_XGBOOST="${INCLUDE_XGBOOST}" \
+  ALIGNN_PYTHON="${ALIGNN_PYTHON:-.venv-alignn/bin/python}" \
+  ALIGNN_PRETRAINED_MODELS="${ALIGNN_PRETRAINED_MODELS}" \
+  ALIGNN_PRETRAINED_FEATURE_MODE="${ALIGNN_PRETRAINED_FEATURE_MODE}" \
+  ALIGNN_PRETRAINED_FEATURE_CACHE_DIR="${ALIGNN_PRETRAINED_FEATURE_CACHE_DIR}" \
+  OVERWRITE_FLAG="${OVERWRITE_FLAG}" \
+  bash scripts/run_ood_publication.sh
+fi
+
 if [[ "${RUN_SUMMARIES}" == "1" ]]; then
   "${IMFUSE[@]}" tables \
     --results_root "${RESULTS_ROOT}" \
+    --ood_results_root "${OOD_RESULTS_ROOT}" \
     --output_dir "${RESULTS_ROOT}" \
     ${OVERWRITE_FLAG} \
     2>&1 | tee "${LOG_DIR}/final_publication_summary_tables.log"
@@ -305,7 +281,7 @@ if [[ "${RUN_PLOTS}" == "1" ]]; then
     --output_dir "${FIGURES_ROOT}/cell_reports" \
     --data_output_dir "${RESULTS_ROOT}/cell_reports_figure_data" \
     ${OVERWRITE_FLAG} \
-    2>&1 | tee "${LOG_DIR}/cell_reports_bcd_figures.log"
+    2>&1 | tee "${LOG_DIR}/cell_reports_figures.log"
 
   "${IMFUSE[@]}" parity \
     --predictions_root "${PREDICTIONS_ROOT}" \

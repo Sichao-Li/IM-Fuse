@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from battery_fusion.experiments.anion_holdout import ProcessedFeatureStore
+from battery_fusion.fusion.feature_store import ProcessedFeatureStore
 from battery_fusion.explain.composition_importance import DEFAULT_MODEL_NAME, load_mid_tri_model, resolve_device, select_samples
 from battery_fusion.explain.faithfulness import _predict_mid_tri
 from battery_fusion.explain.permutation import (

@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from torch import nn
 
-from battery_fusion.experiments.anion_holdout import ProcessedFeatureStore
+from battery_fusion.fusion.feature_store import ProcessedFeatureStore
 from battery_fusion.explain.context import FusionContextWrapper, FusionInputWrapper
 from battery_fusion.explain.grs import GRSConfig, run_fis_explainer
 from battery_fusion.features.tabular import vocabulary_from_formulas

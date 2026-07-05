@@ -53,40 +53,6 @@ MODEL_LABELS = {
     "full_fusion": "Full fusion",
     "alignn_pretrained_rf": "ALIGNN + RF",
 }
-MODEL_FAMILY = {
-    "composition": "neural",
-    "graph": "neural",
-    "composition_graph": "neural",
-    "full_fusion": "full_fusion",
-    "random_forest": "classical",
-    "xgboost": "classical",
-    "alignn_pretrained_rf": "alignn",
-}
-FAMILY_COLORS = {
-    "neural": "#4C78A8",
-    "full_fusion": "#D55E00",
-    "classical": "#59A14F",
-    "alignn": "#8E6BBE",
-}
-HOLDOUT_ORDER = [
-    "composition",
-    "random_forest",
-    "xgboost",
-    "graph",
-    "composition_graph",
-    "full_fusion",
-    "alignn_pretrained_rf",
-]
-RANDOM_MATCH = {
-    "composition": "unimodal_tabular",
-    "random_forest": "random_forest",
-    "xgboost": "xgboost",
-    "graph": "unimodal_structure",
-    "composition_graph": "late_dual_tabular_structure",
-    "full_fusion": "mid_tri_rdf_tabular_structure",
-    "alignn_pretrained_rf": "alignn_pretrained_rf",
-}
-
 SUBGROUP_MODELS = [
     "unimodal_tabular",
     "random_forest",
@@ -209,40 +175,6 @@ def build_modality_dropout_plot_data(results_root: Path, modality_dropout_dir: s
         summary["condition_label"] = summary["condition"].map(CONDITION_LABELS).fillna(summary["condition"])
         rows.append(summary)
     return pd.concat(rows, ignore_index=True, sort=False) if rows else pd.DataFrame()
-
-
-def build_holdout_plot_data(results_root: Path) -> pd.DataFrame:
-    random_summary = pd.read_csv(results_root / "publication_random_split_summary.csv")
-    holdout_summary = pd.read_csv(results_root / "publication_experiment_c_halide_holdout_summary.csv")
-    rows: list[dict[str, object]] = []
-    for target in TARGETS:
-        random_target = random_summary[random_summary["target"] == target]
-        holdout_target = holdout_summary[holdout_summary["target"] == target]
-        for order, holdout_model in enumerate(HOLDOUT_ORDER):
-            holdout_row = holdout_target[holdout_target["model_name"] == holdout_model]
-            random_model = RANDOM_MATCH[holdout_model]
-            random_row = random_target[random_target["model_name"] == random_model]
-            if holdout_row.empty or random_row.empty:
-                continue
-            holdout_one = holdout_row.iloc[0]
-            random_one = random_row.iloc[0]
-            rows.append(
-                {
-                    "target": target,
-                    "model_name": holdout_model,
-                    "model_label": MODEL_LABELS.get(holdout_model, holdout_model),
-                    "family": MODEL_FAMILY.get(holdout_model, "neural"),
-                    "order": order,
-                    "random_model_name": random_model,
-                    "random_MAE_mean": float(random_one["MAE_mean"]),
-                    "random_MAE_std": float(random_one["MAE_std"]),
-                    "holdout_MAE_mean": float(holdout_one["MAE_mean"]),
-                    "holdout_MAE_std": float(holdout_one["MAE_std"]),
-                    "delta_holdout_minus_random": float(holdout_one["MAE_mean"] - random_one["MAE_mean"]),
-                    "n_test": float(holdout_one["n_test"]),
-                }
-            )
-    return pd.DataFrame(rows)
 
 
 def _load_subgroup_metrics(results_root: Path, target: str) -> pd.DataFrame:
@@ -506,61 +438,6 @@ def plot_figure_b(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) ->
     plt.close(fig)
 
 
-def plot_figure_c(plot_data: pd.DataFrame, output_dir: Path, overwrite: bool) -> None:
-    configure_style()
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.65), constrained_layout=True)
-    for ax, target in zip(axes, TARGETS):
-        subset = plot_data[plot_data["target"] == target].sort_values("order", ascending=False)
-        y = np.arange(len(subset))
-        for idx, row in enumerate(subset.itertuples(index=False)):
-            color = FAMILY_COLORS.get(row.family, "#4C78A8")
-            ax.plot(
-                [row.random_MAE_mean, row.holdout_MAE_mean],
-                [idx, idx],
-                color="#C8CED6",
-                linewidth=1.3,
-                zorder=1,
-            )
-            ax.errorbar(
-                row.random_MAE_mean,
-                idx,
-                xerr=0.0 if pd.isna(row.random_MAE_std) else row.random_MAE_std,
-                fmt="o",
-                markersize=4.0,
-                markerfacecolor="white",
-                markeredgecolor=color,
-                markeredgewidth=1.1,
-                ecolor=color,
-                elinewidth=0.8,
-                capsize=2,
-                zorder=3,
-            )
-            ax.errorbar(
-                row.holdout_MAE_mean,
-                idx,
-                xerr=0.0 if pd.isna(row.holdout_MAE_std) else row.holdout_MAE_std,
-                fmt="o",
-                markersize=4.4,
-                markerfacecolor=color,
-                markeredgecolor=color,
-                ecolor=color,
-                elinewidth=0.8,
-                capsize=2,
-                zorder=4,
-            )
-        ax.set_yticks(y, subset["model_label"])
-        ax.set_xlabel(f"MAE ({TARGET_UNITS[target]})")
-        _clean_axes(ax)
-    handles = [
-        plt.Line2D([0], [0], marker="o", linestyle="", markerfacecolor="white", markeredgecolor="#555555", label="Random split"),
-        plt.Line2D([0], [0], marker="o", linestyle="", markerfacecolor="#555555", markeredgecolor="#555555", label="Halide holdout"),
-    ]
-    fig.legend(handles=handles, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.54, -0.045))
-    # fig.text(0.004, 0.99, "C", fontsize=12, fontweight="bold", va="top")
-    save_figure(fig, output_dir / "figure_c_halide_holdout_random_vs_ood", overwrite)
-    plt.close(fig)
-
-
 def _ordered_groups(group_type: str, values: list[str]) -> list[str]:
     order = ANION_ORDER if group_type == "anion_family" else ION_ORDER
     existing = [value for value in order if value in values]
@@ -773,21 +650,18 @@ def build_and_plot(
     data_output_dir.mkdir(parents=True, exist_ok=True)
 
     figure_b_data = build_modality_dropout_plot_data(results_root, modality_dropout_dir=modality_dropout_dir)
-    figure_c_data = build_holdout_plot_data(results_root)
     figure_d_data = build_subgroup_delta_plot_data(results_root, fusion_model=fusion_model)
     figure_d2_data = build_fusion_subgroup_benefit_plot_data(results_root, fusion_model=fusion_model)
     figure_d3_data = build_fusion_baseline_benefit_plot_data(results_root, fusion_model=fusion_model)
 
     outputs = {
         "figure_b_data": data_output_dir / "figure_b_modality_dropout_delta_mae.csv",
-        "figure_c_data": data_output_dir / "figure_c_halide_holdout_random_vs_ood.csv",
         "figure_d_data": data_output_dir / "figure_d_subgroup_delta_mae_heatmap.csv",
         "figure_d2_data": data_output_dir / "figure_d2_fusion_subgroup_win_rate.csv",
         "figure_d3_data": data_output_dir / "figure_d3_fusion_baseline_win_rate.csv",
     }
     for key, frame in [
         ("figure_b_data", figure_b_data),
-        ("figure_c_data", figure_c_data),
         ("figure_d_data", figure_d_data),
         ("figure_d2_data", figure_d2_data),
         ("figure_d3_data", figure_d3_data),
@@ -798,14 +672,12 @@ def build_and_plot(
         frame.to_csv(path, index=False)
 
     plot_figure_b(figure_b_data, output_dir, overwrite=overwrite)
-    plot_figure_c(figure_c_data, output_dir, overwrite=overwrite)
     plot_figure_d(figure_d_data, output_dir, overwrite=overwrite)
     plot_figure_d2(figure_d2_data, output_dir, overwrite=overwrite)
     plot_figure_d3(figure_d3_data, output_dir, overwrite=overwrite)
 
     for name in [
         "figure_b_modality_dropout_delta_mae",
-        "figure_c_halide_holdout_random_vs_ood",
         "figure_d_subgroup_delta_mae_heatmap",
         "figure_d2_fusion_subgroup_win_rate",
         "figure_d3_fusion_baseline_win_rate",
@@ -816,7 +688,7 @@ def build_and_plot(
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Render Cell Reports-style Experiment B/C/D figures.")
+    parser = argparse.ArgumentParser(description="Render retained modality-dropout and subgroup figures.")
     parser.add_argument("--results_root", type=Path, default=Path("results/final_publication"))
     parser.add_argument("--output_dir", type=Path, default=Path("figures/final_publication/cell_reports"))
     parser.add_argument("--data_output_dir", type=Path, default=Path("results/final_publication/cell_reports_figure_data"))

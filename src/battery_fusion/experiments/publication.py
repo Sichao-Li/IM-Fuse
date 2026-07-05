@@ -15,7 +15,7 @@ from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader, Dataset, Subset
 
-from battery_fusion.experiments.anion_holdout import ProcessedFeatureStore
+from battery_fusion.fusion.feature_store import ProcessedFeatureStore
 from battery_fusion.fusion.cgcnn_multimodal import (
     RDFEncoder,
     StructureNetwork,

@@ -21,7 +21,7 @@ IM-Fuse separates the project into reusable layers.
 
 - `battery_fusion.experiments.publication`: random-split publication matrix.
 - `battery_fusion.experiments.modality_dropout`: inference-time missing-modality robustness.
-- `battery_fusion.experiments.anion_holdout`: chemistry-aware OOD holdout.
+- `battery_fusion.experiments.ood_splits`: composition-cluster and working-ion OOD split generation.
 - `battery_fusion.experiments.subgroups`: anion-family and working-ion audits.
 - `battery_fusion.experiments.classical_baselines`: RF/XGBoost baselines.
 - `battery_fusion.experiments.alignn_pretrained_baseline`: pretrained ALIGNN

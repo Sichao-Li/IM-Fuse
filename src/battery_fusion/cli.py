@@ -18,12 +18,11 @@ COMMANDS: dict[str, tuple[str, str]] = {
         "battery_fusion.data.splits",
         "Create deterministic random train/val/test split manifests.",
     ),
-    "split": ("battery_fusion.experiments.chemistry_splits", "Create chemistry-aware split files."),
+    "split-ood": ("battery_fusion.experiments.ood_splits", "Create composition-cluster or working-ion OOD splits."),
     "train": ("battery_fusion.experiments.publication", "Run the publication fusion model matrix."),
     "baseline-classical": ("battery_fusion.experiments.classical_baselines", "Run RF/XGBoost composition baselines."),
     "baseline-alignn": ("battery_fusion.experiments.alignn_pretrained_baseline", "Run pretrained ALIGNN readout + RF baseline."),
     "dropout": ("battery_fusion.experiments.modality_dropout", "Evaluate inference-time modality dropout."),
-    "holdout": ("battery_fusion.experiments.anion_holdout", "Train/evaluate leave-one-anion-family-out models."),
     "subgroups": ("battery_fusion.experiments.subgroups", "Compute anion-family and working-ion subgroup metrics."),
     "tables": ("battery_fusion.experiments.final_publication_tables", "Build final publication summary tables."),
     "figures": ("battery_fusion.experiments.cell_reports_figures", "Generate publication B/C/D figures."),
@@ -54,6 +53,7 @@ def _print_help() -> None:
     print("Examples:")
     print("  imfuse train --target_col average_voltage --seeds 0 1 2 3 4 ...")
     print("  imfuse dropout --target_name average_voltage --seeds 0 1 2 3 4 ...")
+    print("  imfuse split-ood composition-cluster --target_col average_voltage ...")
     print("  imfuse figures --output_dir figures/final_publication/cell_reports")
 
 

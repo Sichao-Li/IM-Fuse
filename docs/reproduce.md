@@ -40,6 +40,12 @@ DEVICE=mps bash scripts/reproduce_publication.sh
 Use `DEVICE=cuda` on a CUDA server. Set `RUN_ALIGNN_PRETRAINED=0` to skip the
 optional pretrained ALIGNN baseline.
 
+To run only the OOD audit table:
+
+```bash
+DEVICE=mps bash scripts/run_ood_publication.sh
+```
+
 ## 4. Outputs
 
 Main summaries are written to:
@@ -47,8 +53,9 @@ Main summaries are written to:
 ```text
 results/final_publication/publication_random_split_summary.csv
 results/final_publication/publication_experiment_b_modality_dropout_summary.csv
-results/final_publication/publication_experiment_c_halide_holdout_summary.csv
+results/final_publication/publication_experiment_c_ood_summary.csv
 results/final_publication/publication_experiment_d_subgroup_summary.csv
+results/final_publication_ood/
 ```
 
 Publication figures are written to:

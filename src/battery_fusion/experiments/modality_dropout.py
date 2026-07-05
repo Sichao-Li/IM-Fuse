@@ -19,7 +19,7 @@ from battery_fusion.experiments.publication import (
     infer_tri_dims,
     resolve_device,
 )
-from battery_fusion.experiments.anion_holdout import ProcessedFeatureStore
+from battery_fusion.fusion.feature_store import ProcessedFeatureStore
 from battery_fusion.fusion.cgcnn_multimodal import (
     MultimodalEarlyFusionRegressor,
     MultimodalMidFusionRegressor,

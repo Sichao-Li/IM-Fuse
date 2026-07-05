@@ -40,7 +40,7 @@ Run a command directly:
 imfuse prepare-data --help
 imfuse train --help
 imfuse dropout --help
-imfuse holdout --help
+imfuse split-ood --help
 imfuse subgroups --help
 imfuse explain-permutation --help
 ```
@@ -95,7 +95,7 @@ imfuse train                run the neural fusion publication matrix
 imfuse baseline-classical   run RF/XGBoost composition baselines
 imfuse baseline-alignn      run pretrained ALIGNN readout + RF baseline
 imfuse dropout              run inference-time modality dropout
-imfuse holdout              run chemistry-aware holdout experiments
+imfuse split-ood            create composition-cluster or working-ion OOD splits
 imfuse subgroups            compute anion/working-ion subgroup metrics
 imfuse tables               build summary tables
 imfuse figures              build publication figures
@@ -113,8 +113,9 @@ The reproduction scripts generate summary tables and figures under:
 
 - `results/final_publication/publication_random_split_summary.csv`
 - `results/final_publication/publication_experiment_b_modality_dropout_summary.csv`
-- `results/final_publication/publication_experiment_c_halide_holdout_summary.csv`
+- `results/final_publication/publication_experiment_c_ood_summary.csv`
 - `results/final_publication/publication_experiment_d_subgroup_summary.csv`
+- `results/final_publication_ood/`
 - `figures/final_publication/`
 
 These output folders are ignored by Git so users can reproduce them locally.
