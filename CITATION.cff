@@ -5,6 +5,7 @@ type: software
 version: 1.0.0
 date-released: 2026-07-19
 repository-code: "https://github.com/Sichao-Li/IM-Fuse"
+license: BSD-3-Clause
 authors:
   - family-names: Li
     given-names: Sichao
@@ -24,7 +25,7 @@ authors:
     given-names: Keith Tobias
 preferred-citation:
   type: article
-  title: "Multimodal Fusion of Complementary Material Representations for Battery Property Prediction with Generalization Stability and Interpretability"
+  title: "Multimodal Fusion of Complementary Material Representations for Battery Property Prediction"
   journal: "Cell Reports Physical Science"
   year: 2026
   authors:

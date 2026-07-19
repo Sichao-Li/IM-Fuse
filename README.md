@@ -128,6 +128,14 @@ Reusable code lives under `src/battery_fusion/`. Add descriptors in
 `experiments/`. The expected extension points and data format are described in
 [docs/extend.md](docs/extend.md) and [docs/framework.md](docs/framework.md).
 
+## License
+
+Software and documentation are released under the
+[BSD 3-Clause License](LICENSE). Data-derived metadata tracked under `data/`
+is released under [CC BY 4.0](data/LICENSE). Third-party source records, CIFs,
+and descriptors retain their original providers' terms and are not relicensed
+by IM-Fuse.
+
 ## Citation And Release
 
 Citation metadata are available in [CITATION.cff](CITATION.cff). The final

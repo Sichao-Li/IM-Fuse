@@ -1,0 +1,18 @@
+IM-Fuse Data-Derived Metadata License
+
+Except where otherwise noted, the data-derived metadata tracked in this
+directory is licensed under the Creative Commons Attribution 4.0 International
+License (CC BY 4.0):
+
+https://creativecommons.org/licenses/by/4.0/
+
+This license covers the released sample ordering, split assignments,
+target-specific tabular metadata, and checksums created for IM-Fuse.
+
+It does not cover Materials Project records, CIF structure files, atom feature
+tables, or other source data obtained from third parties. Those materials
+remain subject to their original providers' terms and are not relicensed by
+this repository.
+
+When reusing the covered metadata, provide appropriate credit, link to the
+license, and indicate whether changes were made.

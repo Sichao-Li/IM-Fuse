@@ -55,3 +55,10 @@ coverage, deterministic membership, and cross-target alignment. Add
 Source-data provenance and redistribution terms must accompany the external
 data archive. Materials Project records remain subject to the source provider's
 terms; this repository does not relicense those source records.
+
+## License
+
+The data-derived metadata tracked in this directory is available under
+[CC BY 4.0](LICENSE). This grant is limited to the files and scope described in
+that notice; it does not apply to externally distributed source records, CIFs,
+or atom descriptors.
