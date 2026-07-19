@@ -20,11 +20,11 @@ At minimum, the source table needs:
 | target value | e.g. `average_voltage`, `capacity_vol` | `--target-col` |
 | working ion | `working_ion` | `--working-ion-col` |
 
-For exact manuscript reproduction, use the cleaned upstream table containing
-10,114 rows and 8,088 unique `id_discharge` values. The repeated IDs represent
-multiple source observations. IM-Fuse keeps the final row for each ID before
-building the shared model-ready pool. Run `imfuse check --strict-artifacts`
-after staging the file to verify both counts.
+For exact released-result reproduction, use the publication source table
+containing 10,123 rows and 8,088 unique `id_discharge` values. The repeated IDs
+represent multiple source observations. IM-Fuse keeps the final row for each
+ID before building the shared model-ready pool. Run
+`imfuse check --strict-artifacts` after staging the file to verify both counts.
 
 CIF files should resolve to one file per retained sample ID:
 

@@ -17,7 +17,7 @@ from battery_fusion import __version__
 
 PUBLICATION_TARGETS = ("average_voltage", "capacity_vol")
 PUBLICATION_SEEDS = tuple(range(5))
-PUBLICATION_SOURCE_ROW_COUNT = 10114
+PUBLICATION_SOURCE_ROW_COUNT = 10123
 PUBLICATION_SAMPLE_COUNT = 8088
 REQUIRED_SPLIT_COLUMNS = {"sample_id", "formula", "working_ion", "anion_family", "target"}
 CORE_PACKAGES = (
@@ -258,7 +258,7 @@ def inspect_artifacts(root: Path, report: ReleaseCheckReport, strict: bool) -> N
             if source_row_count != PUBLICATION_SOURCE_ROW_COUNT:
                 source_problem = (
                     f"data/raw/mp_total.csv has {source_row_count} rows; "
-                    f"the cleaned publication source table has {PUBLICATION_SOURCE_ROW_COUNT}"
+                    f"the publication source table has {PUBLICATION_SOURCE_ROW_COUNT}"
                 )
             elif source_unique_id_count != PUBLICATION_SAMPLE_COUNT:
                 source_problem = (

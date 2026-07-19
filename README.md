@@ -57,8 +57,8 @@ imfuse check --strict-artifacts
 Git tracks the exact five-seed split assignments and their checksums. The
 model-ready intersection contains 8,088 unique discharge IDs, with
 6,470/808/810 train/validation/test samples per seed. Both targets use the same
-IDs and membership. The manuscript's 10,114 count is the cleaned row-level
-source table before repeated discharge IDs are resolved; see
+IDs and membership. The source table contains 10,123 rows before repeated
+discharge IDs are resolved; see
 [data/README.md](data/README.md) for the two-stage contract.
 
 Full reruns additionally require:

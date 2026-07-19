@@ -18,12 +18,12 @@ The model-ready intersection contains 8,088 unique discharge IDs. Each seed
 contains 6,470 training, 808 validation, and 810 test samples. Membership is
 identical across the two targets, and the partitions are disjoint.
 
-The manuscript's 10,114 count refers to the cleaned row-level source table
-before discharge-ID deduplication. Repeated `id_discharge` values are expected
-at that stage. The released learning contract then keeps the last source row
-per ID and intersects samples available in all three modalities, producing the
-8,088 unique IDs represented by the tracked splits. These counts describe
-different stages and should not be used interchangeably.
+The publication source table contains 10,123 rows and 8,088 unique
+`id_discharge` values. Repeated IDs are expected because multiple reaction
+records can share a discharged material. The released learning contract keeps
+the last source row per ID, producing the 8,088 unique IDs represented by the
+tracked splits. Row and unique-ID counts describe different stages and should
+not be used interchangeably.
 
 ## Split Table Fields
 
@@ -37,16 +37,16 @@ different stages and should not be used interchangeably.
 
 ## Provenance And Processing
 
-The external cleaned `mp_total.csv` contains 10,114 rows and may contain
-repeated `id_discharge` values. The publication pipeline retains the last row
-for each ID, intersects IDs available in composition, CIF-derived RDF, and
-graph representations, and then applies the tracked seed-specific assignments.
+The external publication `mp_total.csv` contains 10,123 rows and 8,088 unique
+`id_discharge` values. The publication pipeline retains the last row for each
+ID, verifies availability of the composition, CIF-derived RDF, and graph
+representations, and then applies the tracked seed-specific assignments.
 Composition clusters are fitted without target values. Target transformations
 are disabled in the retained release.
 
-The exact source-cleaning operation that produces the 10,114-row table belongs
-to the upstream data release. IM-Fuse starts from that cleaned table and does
-not infer or silently reapply undocumented physical-outlier rules.
+IM-Fuse starts from this source table and does not silently apply an additional
+physical-outlier filter. Applying such a filter would change the sample pool
+and would not reproduce the tracked splits.
 
 Run `imfuse check` to verify checksums, schema, split disjointness, seed
 coverage, deterministic membership, and cross-target alignment. Add
