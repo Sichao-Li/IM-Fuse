@@ -8,6 +8,12 @@ mechanisms.
 All commands use the public `imfuse` command. Implementation modules live under
 `src/battery_fusion/explain/`.
 
+Install the interpretation dependency with:
+
+```bash
+python -m pip install -e ".[interpretability]"
+```
+
 ## Method Summary
 
 ### Composition GRS/FIS Importance

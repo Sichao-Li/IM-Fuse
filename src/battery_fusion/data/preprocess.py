@@ -34,6 +34,7 @@ def preprocess_modalities(
     split_path: Path,
     labels_path: Path,
     modalities: Sequence[str],
+    output_name: str | None = None,
     atom_init_path: Path | None = None,
     rdf_bins: int = 400,
     rdf_cutoff: float = 20.0,
@@ -44,7 +45,7 @@ def preprocess_modalities(
 
     paths = ProjectPaths(root=Path(root))
     split = _load_split(split_path)
-    split_name = split.get("name") or Path(split_path).stem
+    split_name = output_name or split.get("name") or Path(split_path).stem
     selected = _validate_modalities(modalities)
     labels = pd.read_csv(labels_path)
     required = {"id_discharge", "target"}
@@ -131,6 +132,7 @@ def preprocess_modalities(
     index.to_csv(output_dir / "index.csv", index=False)
     config = {
         "split": str(split_path),
+        "output_name": split_name,
         "labels": str(labels_path),
         "modalities": selected,
         "rdf": {"bins": rdf_bins, "cutoff": rdf_cutoff},
@@ -188,6 +190,11 @@ def main() -> None:
     parser.add_argument(
         "--modalities", nargs="+", default=["rdf", "tabular", "structure"]
     )
+    parser.add_argument(
+        "--output-name",
+        default=None,
+        help="Processed-cache directory name; defaults to the split manifest name.",
+    )
     parser.add_argument("--atom-init", type=Path, default=None)
     parser.add_argument("--rdf-bins", type=int, default=400)
     parser.add_argument("--rdf-cutoff", type=float, default=20.0)
@@ -200,6 +207,7 @@ def main() -> None:
         split_path=args.split,
         labels_path=args.labels,
         modalities=args.modalities,
+        output_name=args.output_name,
         atom_init_path=args.atom_init,
         rdf_bins=args.rdf_bins,
         rdf_cutoff=args.rdf_cutoff,

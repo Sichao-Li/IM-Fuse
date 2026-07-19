@@ -1146,7 +1146,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run clean publication training matrix.")
     parser.add_argument("--processed_root", type=Path, default=Path("data/processed/publication"))
     parser.add_argument("--raw_data", type=Path, default=Path("data/raw/mp_total.csv"))
-    parser.add_argument("--target_col", choices=["average_voltage", "capacity_vol"], required=True)
+    parser.add_argument("--target_col", required=True)
     parser.add_argument("--split_dir", type=Path, required=True)
     parser.add_argument("--output_dir", type=Path, required=True)
     parser.add_argument("--labels_path", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv"))

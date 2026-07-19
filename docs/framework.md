@@ -6,16 +6,16 @@ IM-Fuse separates the project into reusable layers.
 
 - `battery_fusion.data`: label normalization, split creation, preprocessing.
 - `battery_fusion.features`: composition, RDF, and structure feature builders.
-- `battery_fusion.fusion.datasets`: aligned multimodal datasets.
+- `battery_fusion.fusion.feature_store`: sample-aligned modality cache loading.
 
 ## Models
 
-- `battery_fusion.models`: single-modality MLP, RDF sequence encoder, and graph
-  baseline components.
-- `battery_fusion.fusion`: early, intermediate, late, dual, and tri-modal fusion
-  model definitions.
-- `battery_fusion.training`: shared metrics, target transforms, train/evaluate
-  loops, and prediction export.
+- `battery_fusion.models.lstm`: retained RDF sequence baseline.
+- `battery_fusion.fusion.cgcnn_multimodal`: composition, RDF, and CGCNN-style
+  encoders plus early and intermediate fusion models.
+- `battery_fusion.experiments.publication`: unimodal training, validation-based
+  early stopping, validation-fitted late fusion, and prediction export.
+- `battery_fusion.training`: regression metrics and optional target transforms.
 
 ## Experiments
 

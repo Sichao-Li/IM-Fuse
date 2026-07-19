@@ -2,77 +2,66 @@
 
 **Interpretable Multimodal Fusion for Battery Materials**
 
-IM-Fuse is a compact research framework for training, evaluating, and auditing
-multimodal battery-material predictors. It aligns three representations:
+IM-Fuse is the reproducible implementation accompanying *Multimodal Fusion of
+Complementary Material Representations for Battery Property Prediction with
+Generalization Stability and Interpretability*. It aligns three material
+representations:
 
-- composition/tabular descriptors,
-- CGCNN-style crystal-graph features,
-- RDF/radial-distribution descriptors.
+- composition element-count descriptors;
+- CGCNN-style crystal graphs;
+- radial distribution function (RDF) vectors.
 
-The public release supports two manuscript targets, `average_voltage` and
-`capacity_vol`, and keeps the narrative deliberately cautious: fusion is used
-to audit modality contribution, missing-modality robustness, chemistry-aware
-generalization, subgroup-dependent complementarity, and attribution
-faithfulness.
+The release predicts average voltage (V) and volumetric capacity (mAh cm^-3)
+with single-modality, pairwise-fusion, and three-modality models. It also
+provides modality-dropout, chemistry-aware OOD, subgroup, attribution,
+interaction, and deletion-faithfulness audits. These analyses describe model
+reliance and subgroup-dependent complementarity; they do not establish causal
+physical mechanisms or universal fusion superiority.
 
 ## Install
 
-```bash
-conda activate battery
-cd battery-fusion-public
-pip install -e ".[classical]"
-```
-
-The package installs the `imfuse` command:
+With Conda:
 
 ```bash
-imfuse --help
+conda env create -f environment.yml
+conda activate im-fuse
 ```
 
-Optional pretrained ALIGNN + RF baselines use a separate ALIGNN environment;
-see `docs/reproduce.md` or `docs/reproducibility.md`.
-
-## Quick Start
-
-Run a command directly:
+Or install into an existing Python 3.10+ environment:
 
 ```bash
-imfuse prepare-data --help
-imfuse train --help
-imfuse dropout --help
-imfuse split-ood --help
-imfuse subgroups --help
-imfuse explain-permutation --help
+python -m pip install -e ".[classical,interpretability]"
 ```
 
-Or reproduce the retained raw-target manuscript pipeline:
+Pretrained ALIGNN+RF uses a separate ALIGNN/DGL environment; see
+[docs/reproducibility.md](docs/reproducibility.md).
+
+## Validate The Checkout
 
 ```bash
-DEVICE=mps bash scripts/reproduce_publication.sh
+imfuse check
+PYTHONPATH=src python -m unittest discover -s tests
 ```
 
-Use `DEVICE=cuda` on a CUDA server.
+`imfuse check` verifies package versions, checksums, split schema,
+disjointness, deterministic membership, seed coverage, and cross-target
+alignment. Missing large external artifacts are reported as warnings. After
+downloading them, require the complete data contract with:
 
-## Public Layout
-
-```text
-configs/                    # public defaults
-data/sample_order/          # compact one-row-per-sample ID order table
-data/splits/                # fixed publication split CSVs
-docs/                       # data, framework, reproduction, and output notes
-scripts/                    # end-to-end reproduction scripts
-src/battery_fusion/         # reusable framework code
-tests/                      # lightweight unit tests
+```bash
+imfuse check --strict-artifacts
 ```
 
-Large artifacts are intentionally excluded from Git: raw CIFs, `mp_total.csv`,
-processed tensor caches, checkpoints, raw predictions, generated `results/`,
-generated `figures/`, pretrained readout caches, local environments, logs, and
-exploratory trial outputs.
+## Data
 
-## Data Contract
+Git tracks the exact five-seed split assignments and their checksums. The
+model-ready intersection contains 8,088 unique discharge IDs, with
+6,470/808/810 train/validation/test samples per seed. Both targets use the same
+IDs and membership. The manuscript's 10,114 count is the cleaned row-level
+source table before repeated discharge IDs are resolved; see
+[data/README.md](data/README.md) for the two-stage contract.
 
-For full reruns, place external artifacts at:
+Full reruns additionally require:
 
 ```text
 data/raw/mp_total.csv
@@ -81,60 +70,67 @@ data/raw/atom_init.json
 data/processed/publication/
 ```
 
-To rebuild those artifacts from an external `mp_total.csv` and CIF release, see
-`docs/data_preparation.md`. The compact sample-order table and split CSVs are included;
-see `docs/data_manifest.md` for retained artifact details.
+These large or source-licensed artifacts are distributed separately from Git.
+See [data/README.md](data/README.md),
+[docs/data_preparation.md](docs/data_preparation.md), and
+[docs/data_and_code_availability.md](docs/data_and_code_availability.md).
 
-## Command Map
+## Reproduce
 
-```text
-imfuse prepare-data          stage/download mp_total + CIFs, labels, splits, caches
-imfuse preprocess           build aligned modality caches
-imfuse random-split         create deterministic random split manifests
-imfuse train                run the neural fusion publication matrix
-imfuse baseline-classical   run RF/XGBoost composition baselines
-imfuse baseline-alignn      run pretrained ALIGNN readout + RF baseline
-imfuse dropout              run inference-time modality dropout
-imfuse split-ood            create composition-cluster or working-ion OOD splits
-imfuse subgroups            compute anion/working-ion subgroup metrics
-imfuse tables               build summary tables
-imfuse figures              build publication figures
-imfuse parity               build train/test parity plots
-imfuse explain-*            run attribution and faithfulness audits
-```
-
-`imfuse` is the only public command surface. The implementation lives under
-`src/battery_fusion/`, including reproducibility modules in
-`src/battery_fusion/experiments/`.
-
-## Generated Outputs
-
-The reproduction scripts generate summary tables and figures under:
-
-- `results/final_publication/publication_random_split_summary.csv`
-- `results/final_publication/publication_experiment_b_modality_dropout_summary.csv`
-- `results/final_publication/publication_experiment_c_ood_summary.csv`
-- `results/final_publication/publication_experiment_d_subgroup_summary.csv`
-- `results/final_publication_ood/`
-- `figures/final_publication/`
-
-These output folders are ignored by Git so users can reproduce them locally.
-`docs/publication_results.md` documents the expected output structure.
-
-## Tests
+Once the full data contract passes validation:
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests
+DEVICE=mps bash scripts/reproduce_publication.sh
 ```
 
-The public tests are smoke tests for reusable behavior, not a full manuscript
-regression suite. See `tests/README.md`.
+Use `DEVICE=cuda` on a CUDA server. The runner executes the retained raw-target
+pipeline for seeds 0-4: neural uni/dual/tri models, RF/XGBoost, pretrained
+ALIGNN+RF, modality dropout, OOD evaluation, subgroup analysis, summary tables,
+and manuscript figures. Full training is computationally intensive and runtime
+depends on hardware. Existing outputs are preserved by default; set
+`OVERWRITE=1` only for a deliberate replacement rerun.
 
-## Extend
+The main generated tables are:
 
-Most extensions should touch only one layer:
+```text
+results/final_publication/publication_random_split_summary.csv
+results/final_publication/publication_experiment_b_modality_dropout_summary.csv
+results/final_publication/publication_experiment_c_ood_summary.csv
+results/final_publication/publication_experiment_d_subgroup_summary.csv
+```
 
-- add a descriptor in `src/battery_fusion/features/`,
-- add a model in `src/battery_fusion/models/` or `src/battery_fusion/fusion/`,
-- add an evaluation protocol in `src/battery_fusion/experiments/`,
-- expose it through `src/battery_fusion/cli.py`.
+Generated results, figures, predictions, and checkpoints are ignored by Git.
+The output contract is documented in
+[docs/publication_results.md](docs/publication_results.md).
+
+## Command Surface
+
+```text
+imfuse check                 validate the release environment and data contract
+imfuse prepare-data          stage raw inputs, labels, splits, and modality caches
+imfuse train                 run the neural publication matrix
+imfuse baseline-classical    run RF/XGBoost composition baselines
+imfuse baseline-alignn       run pretrained ALIGNN readout + RF
+imfuse dropout               evaluate inference-time modality dropout
+imfuse split-ood             create composition-cluster/working-ion holdouts
+imfuse subgroups             evaluate anion-family/working-ion subgroups
+imfuse tables                collect publication summary tables
+imfuse figures               generate publication figures
+imfuse explain-*             run attribution and faithfulness audits
+```
+
+Run `imfuse --help` or `imfuse <command> --help` for options.
+
+## Adapt IM-Fuse
+
+Reusable code lives under `src/battery_fusion/`. Add descriptors in
+`features/`, models in `models/` or `fusion/`, and evaluation protocols in
+`experiments/`. The expected extension points and data format are described in
+[docs/extend.md](docs/extend.md) and [docs/framework.md](docs/framework.md).
+
+## Citation And Release
+
+Citation metadata are available in [CITATION.cff](CITATION.cff). The final
+software and data DOIs will be added after Zenodo archival. Source-data and
+artifact availability are described in
+[docs/data_and_code_availability.md](docs/data_and_code_availability.md).

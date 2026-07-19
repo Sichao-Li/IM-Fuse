@@ -326,6 +326,7 @@ def prepare_data_foundation(
     val_ratio: float = 0.1,
     test_ratio: float = 0.1,
     modalities: list[str] | None = None,
+    processed_name: str = "publication",
     preprocess: bool = False,
     allow_missing_cifs: bool = False,
     overwrite: bool = False,
@@ -336,7 +337,9 @@ def prepare_data_foundation(
     paths = ProjectPaths(root=root)
     paths.raw_dir.mkdir(parents=True, exist_ok=True)
     paths.raw_cif_dir.mkdir(parents=True, exist_ok=True)
-    seeds = [42] if seeds is None else list(seeds)
+    seeds = list(range(5)) if seeds is None else list(seeds)
+    if not seeds:
+        raise ValueError("At least one split seed is required")
     modalities = ["tabular", "structure", "rdf"] if modalities is None else list(modalities)
 
     raw_mp_total = _stage_mp_total(
@@ -401,14 +404,17 @@ def prepare_data_foundation(
             test_ratio=test_ratio,
         )
         split_paths.append(str(split_path))
-        if preprocess:
-            preprocess_modalities(
-                root=root,
-                split_path=split_path,
-                labels_path=labels_path,
-                modalities=modalities,
-            )
-            processed_roots.append(str(paths.processed_split_dir(split_path.stem)))
+    if preprocess:
+        # Features are target-independent and each split manifest covers the same
+        # sample pool, so one manifest is sufficient to build the shared cache.
+        preprocess_modalities(
+            root=root,
+            split_path=Path(split_paths[0]),
+            labels_path=labels_path,
+            modalities=modalities,
+            output_name=processed_name,
+        )
+        processed_roots.append(str(paths.processed_split_dir(processed_name)))
 
     manifest_path = paths.data_dir / "manifests" / f"{target_col}_data_foundation_manifest.json"
     result = DataFoundationResult(
@@ -521,11 +527,16 @@ def main() -> None:
     parser.add_argument("--formula-col", default="formula_discharge")
     parser.add_argument("--working-ion-col", default="working_ion")
     parser.add_argument("--labels-output", type=Path, default=None)
-    parser.add_argument("--seeds", nargs="+", type=int, default=[42])
+    parser.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
     parser.add_argument("--train", type=float, default=0.8)
     parser.add_argument("--val", type=float, default=0.1)
     parser.add_argument("--test", type=float, default=0.1)
     parser.add_argument("--modalities", nargs="+", default=["tabular", "structure", "rdf"])
+    parser.add_argument(
+        "--processed-name",
+        default="publication",
+        help="Shared processed-cache directory under data/processed/.",
+    )
     parser.add_argument("--preprocess", action="store_true")
     parser.add_argument("--allow-missing-cifs", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
@@ -553,6 +564,7 @@ def main() -> None:
         val_ratio=args.val,
         test_ratio=args.test,
         modalities=args.modalities,
+        processed_name=args.processed_name,
         preprocess=args.preprocess,
         allow_missing_cifs=args.allow_missing_cifs,
         overwrite=args.overwrite,

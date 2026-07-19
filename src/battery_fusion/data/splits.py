@@ -78,7 +78,7 @@ def main() -> None:
     parser.add_argument(
         "--labels", type=Path, default=Path("data/sample_order/sample_order_keep_last.csv")
     )
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--train", type=float, default=0.8)
     parser.add_argument("--val", type=float, default=0.1)
     parser.add_argument("--test", type=float, default=0.1)

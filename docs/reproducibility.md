@@ -5,7 +5,7 @@ All commands assume the clean repo root:
 ```bash
 conda activate battery
 cd battery-fusion-public
-pip install -e ".[classical]"
+pip install -e ".[classical,interpretability]"
 ```
 
 The public release keeps one command surface: `imfuse`. The Python modules under
@@ -14,6 +14,13 @@ be called directly by new users.
 
 The retained manuscript scope uses raw targets only, seeds `0 1 2 3 4`, and the
 two targets `average_voltage` and `capacity_vol`.
+
+Before a full rerun, validate the tracked splits and separately distributed
+artifacts:
+
+```bash
+imfuse check --strict-artifacts
+```
 
 ## One-Command Final Rerun
 
@@ -29,6 +36,9 @@ PYTHON=python \
 ALIGNN_PYTHON=.venv-alignn/bin/python \
 bash scripts/reproduce_publication.sh
 ```
+
+The runner does not overwrite existing outputs by default. For a deliberate
+replacement rerun, set `OVERWRITE=1`.
 
 The runner executes the random-split neural matrix, RF/XGBoost baselines,
 pretrained ALIGNN+RF, Experiment B modality dropout, Experiment C OOD audits,
@@ -250,5 +260,6 @@ imfuse explain-deletion \
 ## Verification
 
 ```bash
+imfuse check
 PYTHONPATH=src python -m unittest discover -s tests
 ```

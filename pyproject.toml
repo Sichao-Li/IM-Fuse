@@ -4,30 +4,49 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "im-fuse"
-version = "0.1.0"
+version = "1.0.0"
 description = "Interpretable multimodal fusion framework for battery materials."
+readme = "README.md"
 requires-python = ">=3.10"
+authors = [
+  {name = "Sichao Li"},
+  {name = "Tianqing Zhu"},
+  {name = "Weijian Deng"},
+  {name = "Zixin Zhuang"},
+  {name = "Xinyue Xu"},
+  {name = "Ye Wei"},
+  {name = "Amanda Susan Barnard"},
+  {name = "Keith Tobias Butler"},
+]
 dependencies = [
-  "chemparse",
-  "matplotlib",
-  "numpy",
-  "pandas",
-  "pymatgen",
-  "rdfpy",
-  "scikit-learn",
-  "torch",
+  "chemparse>=0.3,<0.4",
+  "matplotlib>=3.8,<4",
+  "numpy>=1.26,<2",
+  "pandas>=2.1,<3",
+  "pymatgen>=2024.1",
+  "rdfpy==1.0.0",
+  "scikit-learn>=1.4,<2",
+  "torch>=2.2,<3",
 ]
 
 [project.optional-dependencies]
 classical = [
-  "xgboost",
+  "xgboost>=2,<4",
+]
+interpretability = [
+  "generalized-rashomon-set==0.1.8",
 ]
 data = [
-  "mp-api",
+  "mp-api>=0.40,<1",
 ]
 alignn = [
   "alignn",
 ]
+
+[project.urls]
+Repository = "https://github.com/Sichao-Li/IM-Fuse"
+Documentation = "https://github.com/Sichao-Li/IM-Fuse#readme"
+Issues = "https://github.com/Sichao-Li/IM-Fuse/issues"
 
 [project.scripts]
 imfuse = "battery_fusion.cli:main"

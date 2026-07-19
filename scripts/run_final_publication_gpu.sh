@@ -49,7 +49,11 @@ OOD_SEEDS="${OOD_SEEDS:-0}"
 OOD_RESULTS_ROOT="${OOD_RESULTS_ROOT:-results/final_publication_ood}"
 OOD_SPLIT_ROOT="${OOD_SPLIT_ROOT:-data/splits/publication_ood}"
 OOD_LOG_DIR="${OOD_LOG_DIR:-logs/publication_ood}"
-OVERWRITE_FLAG="${OVERWRITE_FLAG:---overwrite}"
+OVERWRITE="${OVERWRITE:-0}"
+OVERWRITE_FLAG="${OVERWRITE_FLAG:-}"
+if [[ "${OVERWRITE}" == "1" ]]; then
+  OVERWRITE_FLAG="--overwrite"
+fi
 
 export CUDA_VISIBLE_DEVICES
 export PYTHONPATH="${PYTHONPATH:-src}"

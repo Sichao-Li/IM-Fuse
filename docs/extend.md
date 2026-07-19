@@ -7,15 +7,16 @@ Use this checklist when adding a model, modality, or evaluation protocol.
 1. Implement the feature builder in `src/battery_fusion/features/`.
 2. Save one tensor/object per sample in the same cache style as existing
    modalities.
-3. Add dataset loading support in `src/battery_fusion/fusion/datasets.py`.
-4. Add modality naming in `src/battery_fusion/fusion/modality_sets.py`.
-5. Add a smoke test under `tests/`.
+3. Register the modality in `ProcessedFeatureStore` and the publication dataset
+   used by `src/battery_fusion/experiments/publication.py`.
+4. Add a small feature-builder and alignment test under `tests/`.
 
 ## Add A New Model
 
 1. Put single-modality models in `src/battery_fusion/models/`.
 2. Put fusion models in `src/battery_fusion/fusion/`.
-3. Reuse `battery_fusion.training.runner` for early stopping, metrics, and
+3. Reuse the validated fit/evaluate helpers in
+   `battery_fusion.experiments.publication` for early stopping, metrics, and
    prediction export.
 4. Add the model to the publication matrix only if it is part of the retained
    study.

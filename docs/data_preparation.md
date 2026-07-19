@@ -20,6 +20,12 @@ At minimum, the source table needs:
 | target value | e.g. `average_voltage`, `capacity_vol` | `--target-col` |
 | working ion | `working_ion` | `--working-ion-col` |
 
+For exact manuscript reproduction, use the cleaned upstream table containing
+10,114 rows and 8,088 unique `id_discharge` values. The repeated IDs represent
+multiple source observations. IM-Fuse keeps the final row for each ID before
+building the shared model-ready pool. Run `imfuse check --strict-artifacts`
+after staging the file to verify both counts.
+
 CIF files should resolve to one file per retained sample ID:
 
 ```text
@@ -52,17 +58,14 @@ imfuse prepare-data \
   --overwrite
 ```
 
-Repeat for `capacity_vol`:
+The processed modalities do not depend on the target, so build the shared
+`data/processed/publication/` cache once. Stage the second target without
+repeating preprocessing:
 
 ```bash
 imfuse prepare-data \
   --target-col capacity_vol \
-  --mp-total-url "$MP_TOTAL_URL" \
-  --cif-archive-url "$CIF_ARCHIVE_URL" \
-  --atom-init-url "$ATOM_INIT_URL" \
-  --seeds 0 1 2 3 4 \
-  --preprocess \
-  --overwrite
+  --seeds 0 1 2 3 4
 ```
 
 For local files:
@@ -121,7 +124,7 @@ data/labels/{target_col}_labels_keep_last.csv
 data/manifests/{target_col}_cif_coverage.csv
 data/manifests/{target_col}_data_foundation_manifest.json
 data/splits/random/{target_col}/random_{target_col}_seed_{seed}.json
-data/processed/random_{target_col}_seed_{seed}/
+data/processed/publication/
 ```
 
 The label table has the standardized columns used by the framework:
@@ -132,11 +135,13 @@ id_discharge,target,formula_discharge,working_ion
 
 The command keeps the last row for each `id_discharge`, matching the manuscript
 pipeline. Rows with missing/non-numeric target values are dropped and counted in
-the manifest.
+the manifest. Source-table cleaning precedes this command; IM-Fuse deliberately
+does not guess physical-outlier rules for an arbitrary user dataset.
 
 ## Modality Processing
 
-With `--preprocess`, IM-Fuse builds:
+With `--preprocess`, IM-Fuse uses the first requested split manifest to cover
+the complete sample pool and builds one shared cache:
 
 - `tabular`: raw formula element-count vectors from `formula_discharge`;
 - `structure`: CGCNN-style graph tensors from CIF files and `atom_init.json`;
@@ -152,7 +157,8 @@ The public repository does not commit large raw artifacts. To reproduce the
 manuscript from scratch:
 
 1. Publish or download `mp_total.csv`, a CIF archive, and `atom_init.json`.
-2. Run `imfuse prepare-data` for `average_voltage` and `capacity_vol`.
+2. Run `imfuse prepare-data --preprocess` once, then stage the second target
+   without `--preprocess`.
 3. Run the retained manuscript matrix:
 
 ```bash
@@ -181,7 +187,15 @@ imfuse prepare-data \
 After preparation, train on the generated split:
 
 ```bash
-imfuse train --help
+imfuse train \
+  --processed_root data/processed/publication \
+  --raw_data data/raw/mp_total.csv \
+  --target_col my_property \
+  --labels_path data/labels/my_property_labels_keep_last.csv \
+  --split_dir data/splits/my_property \
+  --output_dir results/my_property \
+  --seeds 0 1 2 3 4 \
+  --device auto
 ```
 
 For extensions, add a new descriptor under `src/battery_fusion/features/` and

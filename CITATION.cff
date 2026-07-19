@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use IM-Fuse, please cite the software and the associated article."
+title: "IM-Fuse: Interpretable Multimodal Fusion for Battery Materials"
+type: software
+version: 1.0.0
+date-released: 2026-07-19
+repository-code: "https://github.com/Sichao-Li/IM-Fuse"
+authors:
+  - family-names: Li
+    given-names: Sichao
+  - family-names: Zhu
+    given-names: Tianqing
+  - family-names: Deng
+    given-names: Weijian
+  - family-names: Zhuang
+    given-names: Zixin
+  - family-names: Xu
+    given-names: Xinyue
+  - family-names: Wei
+    given-names: Ye
+  - family-names: Barnard
+    given-names: Amanda Susan
+  - family-names: Butler
+    given-names: Keith Tobias
+preferred-citation:
+  type: article
+  title: "Multimodal Fusion of Complementary Material Representations for Battery Property Prediction with Generalization Stability and Interpretability"
+  journal: "Cell Reports Physical Science"
+  year: 2026
+  authors:
+    - family-names: Li
+      given-names: Sichao
+    - family-names: Zhu
+      given-names: Tianqing
+    - family-names: Deng
+      given-names: Weijian
+    - family-names: Zhuang
+      given-names: Zixin
+    - family-names: Xu
+      given-names: Xinyue
+    - family-names: Wei
+      given-names: Ye
+    - family-names: Barnard
+      given-names: Amanda Susan
+    - family-names: Butler
+      given-names: Keith Tobias

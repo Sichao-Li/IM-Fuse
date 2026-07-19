@@ -4,8 +4,14 @@ import importlib
 import sys
 from collections.abc import Sequence
 
+from battery_fusion import __version__
+
 
 COMMANDS: dict[str, tuple[str, str]] = {
+    "check": (
+        "battery_fusion.release_check",
+        "Validate the environment and tracked publication data contract.",
+    ),
     "prepare-data": (
         "battery_fusion.data.foundation",
         "Stage mp_total/CIF inputs, labels, splits, and optional modality caches.",
@@ -39,7 +45,7 @@ COMMANDS: dict[str, tuple[str, str]] = {
 
 
 def _print_help() -> None:
-    print("IM-Fuse command line")
+    print(f"IM-Fuse {__version__}")
     print("")
     print("Usage:")
     print("  imfuse <command> [command options]")
@@ -51,6 +57,7 @@ def _print_help() -> None:
         print(f"  {command:<{width}}  {description}")
     print("")
     print("Examples:")
+    print("  imfuse check")
     print("  imfuse train --target_col average_voltage --seeds 0 1 2 3 4 ...")
     print("  imfuse dropout --target_name average_voltage --seeds 0 1 2 3 4 ...")
     print("  imfuse split-ood composition-cluster --target_col average_voltage ...")
@@ -79,6 +86,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args[0] in {"--list", "list"}:
         for command in COMMANDS:
             print(command)
+        return 0
+    if args[0] in {"-V", "--version"}:
+        print(__version__)
         return 0
     command = args.pop(0)
     if command not in COMMANDS:

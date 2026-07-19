@@ -1,0 +1,32 @@
+{
+  "title": "IM-Fuse: Interpretable Multimodal Fusion for Battery Materials",
+  "upload_type": "software",
+  "description": "Reproducible code for multimodal battery-property prediction using composition, crystal-graph, and radial-distribution representations, with robustness, chemistry-aware generalization, subgroup, and interpretability audits.",
+  "creators": [
+    {"name": "Li, Sichao"},
+    {"name": "Zhu, Tianqing"},
+    {"name": "Deng, Weijian"},
+    {"name": "Zhuang, Zixin"},
+    {"name": "Xu, Xinyue"},
+    {"name": "Wei, Ye"},
+    {"name": "Barnard, Amanda Susan"},
+    {"name": "Butler, Keith Tobias"}
+  ],
+  "keywords": [
+    "battery materials",
+    "multimodal machine learning",
+    "materials informatics",
+    "interpretability",
+    "out-of-distribution evaluation"
+  ],
+  "access_right": "open",
+  "version": "1.0.0",
+  "publication_date": "2026-07-19",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Sichao-Li/IM-Fuse/releases/tag/v1.0.0",
+      "relation": "isIdenticalTo",
+      "scheme": "url"
+    }
+  ]
+}
