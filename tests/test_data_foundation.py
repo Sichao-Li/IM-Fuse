@@ -5,14 +5,14 @@ from tempfile import TemporaryDirectory
 
 import pandas as pd
 
-from battery_fusion.data.foundation import (
+from imfuse.data.foundation import (
     audit_cif_coverage,
     build_label_table_from_mp_total,
     copy_matching_cifs,
     prepare_data_foundation,
 )
-from battery_fusion.data.splits import create_split_manifest
-from battery_fusion.paths import ProjectPaths
+from imfuse.data.splits import create_split_manifest
+from imfuse.paths import ProjectPaths
 
 
 class DataFoundationTests(unittest.TestCase):

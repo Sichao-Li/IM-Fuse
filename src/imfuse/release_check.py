@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from battery_fusion import __version__
+from imfuse import __version__
 
 
 PUBLICATION_TARGETS = ("average_voltage", "capacity_vol")
@@ -315,8 +315,8 @@ def run_release_check(root: Path, strict_artifacts: bool = False) -> ReleaseChec
         dependencies=dependencies,
         devices=devices,
     )
-    if __version__ != "1.0.0":
-        report.errors.append(f"Expected package version 1.0.0, found {__version__}")
+    if __version__ != "1.1.0":
+        report.errors.append(f"Expected package version 1.1.0, found {__version__}")
     validate_publication_splits(root, report)
     validate_checksums(root, report)
     inspect_artifacts(root, report, strict=strict_artifacts)

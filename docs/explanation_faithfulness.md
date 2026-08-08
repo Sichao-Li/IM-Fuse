@@ -6,7 +6,7 @@ feature contribution. These experiments do not claim causal physical
 mechanisms.
 
 All commands use the public `imfuse` command. Implementation modules live under
-`src/battery_fusion/explain/`.
+`src/imfuse/explain/`.
 
 Install the interpretation dependency with:
 

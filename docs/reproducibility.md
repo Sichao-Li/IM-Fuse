@@ -3,13 +3,13 @@
 All commands assume the clean repo root:
 
 ```bash
-conda activate battery
-cd battery-fusion-public
+conda activate im-fuse
+cd IM-Fuse
 pip install -e ".[classical,interpretability]"
 ```
 
 The public release keeps one command surface: `imfuse`. The Python modules under
-`src/battery_fusion/experiments/` are implementation details and are not meant to
+`src/imfuse/experiments/` are implementation details and are not meant to
 be called directly by new users.
 
 The retained manuscript scope uses raw targets only, seeds `0 1 2 3 4`, and the

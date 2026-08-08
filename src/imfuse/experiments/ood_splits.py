@@ -12,8 +12,8 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
-from battery_fusion.features.tabular import formula_vector, vocabulary_from_formulas
-from battery_fusion.utils.chemistry_groups import assign_chemistry_groups, normalize_working_ion
+from imfuse.features.tabular import formula_vector, vocabulary_from_formulas
+from imfuse.utils.chemistry_groups import assign_chemistry_groups, normalize_working_ion
 
 
 LOGGER = logging.getLogger(__name__)

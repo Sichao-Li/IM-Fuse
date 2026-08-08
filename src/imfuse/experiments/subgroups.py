@@ -8,7 +8,7 @@ from collections.abc import Sequence
 import numpy as np
 import pandas as pd
 
-from battery_fusion.utils.chemistry_groups import (
+from imfuse.utils.chemistry_groups import (
     ANION_FAMILIES,
     WORKING_ION_GROUPS,
     load_assignments,

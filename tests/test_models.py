@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from battery_fusion.models.lstm import RdfLSTMRegressor
+from imfuse.models.lstm import RdfLSTMRegressor
 
 
 class ModelTests(unittest.TestCase):

@@ -53,7 +53,7 @@ fi
 export PYTHONPATH="${PYTHONPATH:-src}"
 export PYTHONUNBUFFERED=1
 export MPLCONFIGDIR
-IMFUSE=("${PYTHON}" -m battery_fusion.cli)
+IMFUSE=("${PYTHON}" -m imfuse.cli)
 
 read -r -a SEED_ARGS <<< "${OOD_SEEDS}"
 read -r -a TARGET_ARGS <<< "${TARGETS}"

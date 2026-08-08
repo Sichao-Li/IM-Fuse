@@ -1,21 +1,21 @@
 """Explanation helpers for multimodal fusion models."""
 
-from battery_fusion.explain.context import FusionContextWrapper, FusionInputWrapper
-from battery_fusion.explain.faithfulness import (
+from imfuse.explain.context import FusionContextWrapper, FusionInputWrapper
+from imfuse.explain.faithfulness import (
     ablation_indices,
     ablation_schedule,
     run_faithfulness_validation,
     summarize_faithfulness,
 )
-from battery_fusion.explain.permutation import run_permutation_importance
-from battery_fusion.explain.permutation_matrix import run_permutation_importance_matrix
-from battery_fusion.explain.results import (
+from imfuse.explain.permutation import run_permutation_importance
+from imfuse.explain.permutation_matrix import run_permutation_importance_matrix
+from imfuse.explain.results import (
     MainEffectSplit,
     group_interactions_by_modality,
     interactions_to_frame,
     split_main_effects,
 )
-from battery_fusion.explain.structure_ablation import (
+from imfuse.explain.structure_ablation import (
     run_structure_atom_ablation,
     summarize_atom_ablation,
 )

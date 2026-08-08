@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "im-fuse"
-version = "1.0.0"
+version = "1.1.0"
 description = "Interpretable multimodal fusion framework for battery materials."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -53,7 +53,7 @@ Documentation = "https://github.com/Sichao-Li/IM-Fuse#readme"
 Issues = "https://github.com/Sichao-Li/IM-Fuse/issues"
 
 [project.scripts]
-imfuse = "battery_fusion.cli:main"
+imfuse = "imfuse.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

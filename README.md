@@ -2,10 +2,14 @@
 
 **Interpretable Multimodal Fusion for Battery Materials**
 
-IM-Fuse is the reproducible implementation accompanying *Multimodal Fusion of
-Complementary Material Representations for Battery Property Prediction with
-Generalization Stability and Interpretability*. It aligns three material
-representations:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21440948.svg)](https://doi.org/10.5281/zenodo.21440948)
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
+[![Tests](https://github.com/Sichao-Li/IM-Fuse/actions/workflows/tests.yml/badge.svg)](https://github.com/Sichao-Li/IM-Fuse/actions/workflows/tests.yml)
+
+IM-Fuse is the reference implementation accompanying *Multimodal Fusion of
+Complementary Material Representations for Generalizable and Interpretable
+Property Prediction* (Cell Reports Physical Science, 2026). It aligns three
+material representations:
 
 - composition element-count descriptors;
 - CGCNN-style crystal graphs;
@@ -121,9 +125,24 @@ imfuse explain-*             run attribution and faithfulness audits
 
 Run `imfuse --help` or `imfuse <command> --help` for options.
 
+## Quickstart On Your Own Data
+
+The full data contract above is only needed to reproduce the publication. To
+build on the pipeline itself, start from the runnable example:
+
+```bash
+python examples/quickstart.py
+```
+
+It trains and probes a tri-modal fusion model on small synthetic structures,
+entirely in memory and on CPU, using only top-level imports
+(`from imfuse import ...`): feature builders for the three modalities, the
+`train_torch_model` loop, and the `masked_modality_forward` dropout probe.
+See [examples/README.md](examples/README.md).
+
 ## Adapt IM-Fuse
 
-Reusable code lives under `src/battery_fusion/`. Add descriptors in
+Reusable code lives under `src/imfuse/`. Add descriptors in
 `features/`, models in `models/` or `fusion/`, and evaluation protocols in
 `experiments/`. The expected extension points and data format are described in
 [docs/extend.md](docs/extend.md) and [docs/framework.md](docs/framework.md).
@@ -138,7 +157,16 @@ by IM-Fuse.
 
 ## Citation And Release
 
-Citation metadata are available in [CITATION.cff](CITATION.cff). The final
-software and data DOIs will be added after Zenodo archival. Source-data and
-artifact availability are described in
+If you use IM-Fuse, please cite the article and the archived software release:
+
+> Li, S., Zhu, T., Deng, W., Zhuang, Z., Xu, X., Wei, Y., Barnard, A. S., &
+> Butler, K. T. Multimodal fusion of complementary material representations
+> for generalizable and interpretable property prediction. *Cell Reports
+> Physical Science* (2026).
+
+The tagged software release is archived on Zenodo under DOI
+[10.5281/zenodo.21440948](https://doi.org/10.5281/zenodo.21440948).
+Machine-readable citation metadata are available in
+[CITATION.cff](CITATION.cff). Source-data and artifact availability are
+described in
 [docs/data_and_code_availability.md](docs/data_and_code_availability.md).

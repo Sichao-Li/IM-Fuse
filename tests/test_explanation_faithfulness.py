@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from battery_fusion.explain.faithfulness import (
+from imfuse.explain.faithfulness import (
     ablation_indices,
     ablation_schedule,
     summarize_faithfulness,

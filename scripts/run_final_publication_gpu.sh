@@ -59,7 +59,7 @@ export CUDA_VISIBLE_DEVICES
 export PYTHONPATH="${PYTHONPATH:-src}"
 export PYTHONUNBUFFERED=1
 export MPLCONFIGDIR
-IMFUSE=("${PYTHON}" -m battery_fusion.cli)
+IMFUSE=("${PYTHON}" -m imfuse.cli)
 
 if [[ "${DEVICE}" == "cuda" ]]; then
   "${PYTHON}" - <<'PY'

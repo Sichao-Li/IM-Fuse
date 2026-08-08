@@ -3,8 +3,8 @@ import unittest
 import torch
 from torch import nn
 
-from battery_fusion.explain.context import FusionContextWrapper, FusionInputWrapper
-from battery_fusion.explain.results import (
+from imfuse.explain.context import FusionContextWrapper, FusionInputWrapper
+from imfuse.explain.results import (
     group_interactions_by_modality,
     interactions_to_frame,
     split_main_effects,

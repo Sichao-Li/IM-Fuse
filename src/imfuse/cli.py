@@ -4,43 +4,43 @@ import importlib
 import sys
 from collections.abc import Sequence
 
-from battery_fusion import __version__
+from imfuse import __version__
 
 
 COMMANDS: dict[str, tuple[str, str]] = {
     "check": (
-        "battery_fusion.release_check",
+        "imfuse.release_check",
         "Validate the environment and tracked publication data contract.",
     ),
     "prepare-data": (
-        "battery_fusion.data.foundation",
+        "imfuse.data.foundation",
         "Stage mp_total/CIF inputs, labels, splits, and optional modality caches.",
     ),
     "preprocess": (
-        "battery_fusion.data.preprocess",
+        "imfuse.data.preprocess",
         "Build aligned composition, RDF, and structure feature caches.",
     ),
     "random-split": (
-        "battery_fusion.data.splits",
+        "imfuse.data.splits",
         "Create deterministic random train/val/test split manifests.",
     ),
-    "split-ood": ("battery_fusion.experiments.ood_splits", "Create composition-cluster or working-ion OOD splits."),
-    "train": ("battery_fusion.experiments.publication", "Run the publication fusion model matrix."),
-    "baseline-classical": ("battery_fusion.experiments.classical_baselines", "Run RF/XGBoost composition baselines."),
-    "baseline-alignn": ("battery_fusion.experiments.alignn_pretrained_baseline", "Run pretrained ALIGNN readout + RF baseline."),
-    "dropout": ("battery_fusion.experiments.modality_dropout", "Evaluate inference-time modality dropout."),
-    "subgroups": ("battery_fusion.experiments.subgroups", "Compute anion-family and working-ion subgroup metrics."),
-    "tables": ("battery_fusion.experiments.final_publication_tables", "Build final publication summary tables."),
-    "figures": ("battery_fusion.experiments.publication_figures", "Generate publication figures."),
-    "parity": ("battery_fusion.experiments.parity_plots", "Generate train/test parity plots."),
-    "explain-composition": ("battery_fusion.explain.composition_importance", "Run composition perturbation attributions."),
-    "explain-fusion": ("battery_fusion.explain.fusion_importance", "Run multimodal fusion attributions."),
-    "explain-permutation": ("battery_fusion.explain.permutation_matrix", "Run permutation-importance matrix experiments."),
-    "explain-permutation-single": ("battery_fusion.explain.permutation", "Run one permutation-importance job."),
-    "explain-structure": ("battery_fusion.explain.structure_ablation", "Run atom/edge ablation for structural attribution."),
-    "explain-deletion": ("battery_fusion.explain.deletion_curves", "Generate deletion-curve figures from explanation outputs."),
-    "explain-faithfulness": ("battery_fusion.explain.faithfulness", "Validate attribution faithfulness with deletion curves."),
-    "plot-interpretability": ("battery_fusion.explain.plotting", "Plot retained interpretability summary figures."),
+    "split-ood": ("imfuse.experiments.ood_splits", "Create composition-cluster or working-ion OOD splits."),
+    "train": ("imfuse.experiments.publication", "Run the publication fusion model matrix."),
+    "baseline-classical": ("imfuse.experiments.classical_baselines", "Run RF/XGBoost composition baselines."),
+    "baseline-alignn": ("imfuse.experiments.alignn_pretrained_baseline", "Run pretrained ALIGNN readout + RF baseline."),
+    "dropout": ("imfuse.experiments.modality_dropout", "Evaluate inference-time modality dropout."),
+    "subgroups": ("imfuse.experiments.subgroups", "Compute anion-family and working-ion subgroup metrics."),
+    "tables": ("imfuse.experiments.final_publication_tables", "Build final publication summary tables."),
+    "figures": ("imfuse.experiments.publication_figures", "Generate publication figures."),
+    "parity": ("imfuse.experiments.parity_plots", "Generate train/test parity plots."),
+    "explain-composition": ("imfuse.explain.composition_importance", "Run composition perturbation attributions."),
+    "explain-fusion": ("imfuse.explain.fusion_importance", "Run multimodal fusion attributions."),
+    "explain-permutation": ("imfuse.explain.permutation_matrix", "Run permutation-importance matrix experiments."),
+    "explain-permutation-single": ("imfuse.explain.permutation", "Run one permutation-importance job."),
+    "explain-structure": ("imfuse.explain.structure_ablation", "Run atom/edge ablation for structural attribution."),
+    "explain-deletion": ("imfuse.explain.deletion_curves", "Generate deletion-curve figures from explanation outputs."),
+    "explain-faithfulness": ("imfuse.explain.faithfulness", "Validate attribution faithfulness with deletion curves."),
+    "plot-interpretability": ("imfuse.explain.plotting", "Plot retained interpretability summary figures."),
 }
 
 

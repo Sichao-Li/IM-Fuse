@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from battery_fusion.utils.chemistry_groups import (
+from imfuse.utils.chemistry_groups import (
     assign_anion_family,
     assign_chemistry_groups,
     normalize_working_ion,

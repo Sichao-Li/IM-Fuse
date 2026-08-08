@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 from pymatgen.core import Lattice, Structure
 
-from battery_fusion.data.preprocess import preprocess_modalities
+from imfuse.data.preprocess import preprocess_modalities
 
 
 class PreprocessTests(unittest.TestCase):

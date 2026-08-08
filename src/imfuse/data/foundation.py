@@ -11,10 +11,10 @@ from typing import Any
 
 import pandas as pd
 
-from battery_fusion.data.preprocess import preprocess_modalities
-from battery_fusion.data.splits import create_split_manifest
-from battery_fusion.paths import ProjectPaths
-from battery_fusion.utils.hash import file_sha256
+from imfuse.data.preprocess import preprocess_modalities
+from imfuse.data.splits import create_split_manifest
+from imfuse.paths import ProjectPaths
+from imfuse.utils.hash import file_sha256
 
 
 @dataclass(frozen=True)

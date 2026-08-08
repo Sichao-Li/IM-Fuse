@@ -9,15 +9,15 @@ import numpy as np
 import pandas as pd
 import torch
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.explain.composition_importance import DEFAULT_MODEL_NAME, load_mid_tri_model, resolve_device, select_samples
-from battery_fusion.explain.faithfulness import _predict_mid_tri
-from battery_fusion.explain.permutation import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.explain.composition_importance import DEFAULT_MODEL_NAME, load_mid_tri_model, resolve_device, select_samples
+from imfuse.explain.faithfulness import _predict_mid_tri
+from imfuse.explain.permutation import (
     _load_selected_features,
     metric_delta_rows,
     run_permutation_importance,
 )
-from battery_fusion.training.metrics import regression_metrics
+from imfuse.training.metrics import regression_metrics
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_MODALITIES = ("composition", "rdf", "structure")

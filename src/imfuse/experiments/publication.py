@@ -15,18 +15,18 @@ from torch import nn
 from torch.optim.lr_scheduler import MultiStepLR
 from torch.utils.data import DataLoader, Dataset, Subset
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.fusion.cgcnn_multimodal import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.fusion.cgcnn_multimodal import (
     RDFEncoder,
     StructureNetwork,
     TabularEncoder,
     build_multimodal_early_fusion,
     build_multimodal_mid_fusion,
 )
-from battery_fusion.models.lstm import RdfLSTMRegressor
-from battery_fusion.training.metrics import regression_metrics
-from battery_fusion.training.target_transform import TargetTransform, fit_target_transform
-from battery_fusion.utils.chemistry_groups import assign_chemistry_groups
+from imfuse.models.lstm import RdfLSTMRegressor
+from imfuse.training.metrics import regression_metrics
+from imfuse.training.target_transform import TargetTransform, fit_target_transform
+from imfuse.utils.chemistry_groups import assign_chemistry_groups
 
 LOGGER = logging.getLogger(__name__)
 MODALITIES = ("tabular", "rdf", "structure")

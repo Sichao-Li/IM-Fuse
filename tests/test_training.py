@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from battery_fusion.training.metrics import regression_metrics
+from imfuse.training.metrics import regression_metrics
 
 
 class TrainingTests(unittest.TestCase):

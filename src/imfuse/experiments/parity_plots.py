@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from battery_fusion.experiments.final_publication_tables import MODEL_LABELS, RANDOM_MODEL_ORDER, TARGETS
+from imfuse.experiments.final_publication_tables import MODEL_LABELS, RANDOM_MODEL_ORDER, TARGETS
 
 
 PREDICTION_EXPERIMENTS = (

@@ -5,7 +5,7 @@ from typing import Any
 
 import pandas as pd
 
-from battery_fusion.utils.hash import file_sha256
+from imfuse.utils.hash import file_sha256
 
 
 def _validate_ratios(train_ratio: float, val_ratio: float, test_ratio: float) -> None:
@@ -65,10 +65,6 @@ def create_split_manifest(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return manifest
-
-
-def load_split_manifest(path: Path) -> dict[str, Any]:
-    return json.loads(Path(path).read_text())
 
 
 def main() -> None:

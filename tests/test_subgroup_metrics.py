@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from battery_fusion.experiments.subgroups import compute_subgroup_metrics, load_prediction_files
+from imfuse.experiments.subgroups import compute_subgroup_metrics, load_prediction_files
 
 
 class SubgroupMetricTests(unittest.TestCase):

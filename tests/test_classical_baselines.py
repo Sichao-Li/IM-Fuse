@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import pandas as pd
 
-from battery_fusion.experiments.classical_baselines import (
+from imfuse.experiments.classical_baselines import (
     build_composition_descriptor_frame,
     classical_model_factories,
     load_formula_vocabulary,

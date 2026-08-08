@@ -1,6 +1,6 @@
 import unittest
 
-from battery_fusion.experiments.modality_dropout import modality_dropout_conditions
+from imfuse.experiments.modality_dropout import modality_dropout_conditions
 
 
 class PublicationModalityDropoutTests(unittest.TestCase):

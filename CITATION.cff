@@ -2,10 +2,14 @@ cff-version: 1.2.0
 message: "If you use IM-Fuse, please cite the software and the associated article."
 title: "IM-Fuse: Interpretable Multimodal Fusion for Battery Materials"
 type: software
-version: 1.0.0
-date-released: 2026-07-19
+version: 1.1.0
+date-released: 2026-08-07
 repository-code: "https://github.com/Sichao-Li/IM-Fuse"
 license: BSD-3-Clause
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21440948
+    description: "Zenodo archive of the tagged software release."
 authors:
   - family-names: Li
     given-names: Sichao
@@ -25,7 +29,7 @@ authors:
     given-names: Keith Tobias
 preferred-citation:
   type: article
-  title: "Multimodal Fusion of Complementary Material Representations for Battery Property Prediction"
+  title: "Multimodal Fusion of Complementary Material Representations for Generalizable and Interpretable Property Prediction"
   journal: "Cell Reports Physical Science"
   year: 2026
   authors:

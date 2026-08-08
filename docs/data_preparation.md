@@ -198,5 +198,5 @@ imfuse train \
   --device auto
 ```
 
-For extensions, add a new descriptor under `src/battery_fusion/features/` and
+For extensions, add a new descriptor under `src/imfuse/features/` and
 wire it into the preprocessing command rather than editing the training scripts.

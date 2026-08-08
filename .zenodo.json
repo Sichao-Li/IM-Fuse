@@ -20,11 +20,11 @@
     "out-of-distribution evaluation"
   ],
   "access_right": "open",
-  "version": "1.0.0",
-  "publication_date": "2026-07-19",
+  "version": "1.1.0",
+  "publication_date": "2026-08-07",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/Sichao-Li/IM-Fuse/releases/tag/v1.0.0",
+      "identifier": "https://github.com/Sichao-Li/IM-Fuse/releases/tag/v1.1.0",
       "relation": "isIdenticalTo",
       "scheme": "url"
     }

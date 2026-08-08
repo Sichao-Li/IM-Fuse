@@ -10,8 +10,8 @@ import pandas as pd
 import torch
 from torch import nn
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.explain.composition_importance import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.explain.composition_importance import (
     CleanFusionAdapter,
     DEFAULT_MODEL_NAME,
     load_feature_names,
@@ -19,8 +19,8 @@ from battery_fusion.explain.composition_importance import (
     resolve_device,
     select_samples,
 )
-from battery_fusion.explain.context import FusionContextWrapper, FusionInputWrapper
-from battery_fusion.explain.grs import GRSConfig, run_fis_explainer
+from imfuse.explain.context import FusionContextWrapper, FusionInputWrapper
+from imfuse.explain.grs import GRSConfig, run_fis_explainer
 
 LOGGER = logging.getLogger(__name__)
 MODALITY_ALIASES = {

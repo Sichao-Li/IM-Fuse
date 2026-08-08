@@ -5,9 +5,9 @@ from tempfile import TemporaryDirectory
 import numpy as np
 from pymatgen.core import Lattice, Structure
 
-from battery_fusion.features.rdf import build_rdf_vector
-from battery_fusion.features.structure import build_crystal_graph
-from battery_fusion.features.tabular import formula_vector, vocabulary_from_formulas
+from imfuse.features.rdf import build_rdf_vector
+from imfuse.features.structure import build_crystal_graph
+from imfuse.features.tabular import formula_vector, vocabulary_from_formulas
 
 
 class FeatureBuilderTests(unittest.TestCase):

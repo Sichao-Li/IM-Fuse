@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from battery_fusion.explain.permutation import (
+from imfuse.explain.permutation import (
     build_feature_groups,
     metric_delta_rows,
     permuted_matrix,

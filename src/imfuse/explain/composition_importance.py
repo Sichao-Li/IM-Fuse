@@ -9,11 +9,11 @@ import pandas as pd
 import torch
 from torch import nn
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.explain.context import FusionContextWrapper, FusionInputWrapper
-from battery_fusion.explain.grs import GRSConfig, run_fis_explainer
-from battery_fusion.features.tabular import vocabulary_from_formulas
-from battery_fusion.fusion.cgcnn_multimodal import build_multimodal_mid_fusion
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.explain.context import FusionContextWrapper, FusionInputWrapper
+from imfuse.explain.grs import GRSConfig, run_fis_explainer
+from imfuse.features.tabular import vocabulary_from_formulas
+from imfuse.fusion.cgcnn_multimodal import build_multimodal_mid_fusion
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_MODEL_NAME = "mid_tri_rdf_tabular_structure"

@@ -8,16 +8,15 @@ import numpy as np
 import pandas as pd
 import torch
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.explain.composition_importance import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.explain.composition_importance import (
     DEFAULT_MODEL_NAME,
     load_mid_tri_model,
     resolve_device,
     select_samples,
 )
-from battery_fusion.explain.faithfulness import _predict_mid_tri
-from battery_fusion.explain.structure_ablation import run_structure_atom_ablation
-from battery_fusion.training.metrics import regression_metrics
+from imfuse.explain.faithfulness import _predict_mid_tri
+from imfuse.training.metrics import regression_metrics
 
 DEFAULT_FRACTIONS = (0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
 ORDERS = ("top", "random", "bottom")
@@ -138,14 +137,6 @@ def _predict_samples(
     return torch.tensor(preds, dtype=torch.float32)
 
 
-def _zero_groups(values: torch.Tensor, groups: list[FeatureGroup]) -> torch.Tensor:
-    output = values.clone()
-    columns = sorted({index for group in groups for index in group.indices})
-    if columns:
-        output[:, columns] = 0.0
-    return output
-
-
 def permute_groups(values: torch.Tensor, groups: list[FeatureGroup], seed: int) -> torch.Tensor:
     """Permute selected feature-group columns across samples."""
     output = values.clone()
@@ -166,17 +157,6 @@ def _zero_atoms_for_sample(graph: dict[str, torch.Tensor], atom_indices: list[in
     }
     if atom_indices:
         output["atom_fea"][atom_indices, :] = 0.0
-    return output
-
-
-def _zero_graph_parts_for_sample(
-    graph: dict[str, torch.Tensor],
-    atom_indices: list[int],
-    edge_feature_indices: list[int],
-) -> dict[str, torch.Tensor]:
-    output = _zero_atoms_for_sample(graph, atom_indices)
-    if edge_feature_indices:
-        output["nbr_fea"][:, :, edge_feature_indices] = 0.0
     return output
 
 
@@ -298,48 +278,6 @@ def compute_structure_atom_deletion_curve(
     return pd.DataFrame(rows)
 
 
-def compute_structure_whole_deletion_curve(
-    target_col: str,
-    model: torch.nn.Module,
-    tabs: torch.Tensor,
-    rdfs: torch.Tensor,
-    graphs: list[dict[str, torch.Tensor]],
-    y_true: torch.Tensor,
-    device: torch.device,
-    fractions: tuple[float, ...] = DEFAULT_FRACTIONS,
-) -> pd.DataFrame:
-    """Compute whole-structure deletion curves for seed-level permutation summaries.
-
-    Structure permutation importance currently has one feature group,
-    `whole_structure`. For a deletion curve, every positive fraction therefore
-    removes the same whole-structure block.
-    """
-    baseline_pred = _predict_samples(model, tabs, rdfs, graphs, device)
-    rows = []
-    for order in ORDERS:
-        for fraction in fractions:
-            count = 0 if fraction == 0 else 1
-            ablated_graphs = (
-                [_zero_atoms_for_sample(graph, list(range(graph["atom_fea"].shape[0]))) for graph in graphs]
-                if count
-                else graphs
-            )
-            ablated_pred = _predict_samples(model, tabs, rdfs, ablated_graphs, device)
-            rows.append(
-                _curve_row(
-                    target_col,
-                    "structure",
-                    order,
-                    fraction,
-                    count,
-                    y_true,
-                    baseline_pred,
-                    ablated_pred,
-                )
-            )
-    return pd.DataFrame(rows)
-
-
 def compute_overall_modality_deletion_curve(
     target_col: str,
     composition_summary_path: Path,
@@ -398,40 +336,6 @@ def compute_overall_modality_deletion_curve(
     return pd.DataFrame(rows)
 
 
-def aggregate_deletion_curves_across_seeds(curves: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate deletion-curve rows as mean +/- std across seeds."""
-    metrics = [
-        "n_deleted",
-        "baseline_mae",
-        "ablated_mae",
-        "delta_mae",
-        "baseline_rmse",
-        "ablated_rmse",
-        "delta_rmse",
-        "baseline_r2",
-        "ablated_r2",
-        "delta_r2",
-        "prediction_delta_mean",
-    ]
-    aggregations = {"seed": pd.NamedAgg(column="seed", aggfunc="nunique")}
-    grouped = curves.groupby(["target_col", "modality", "order", "ablation_fraction"], dropna=False)
-    rows = []
-    for keys, group in grouped:
-        row = {
-            "target_col": keys[0],
-            "modality": keys[1],
-            "order": keys[2],
-            "ablation_fraction": keys[3],
-            "n_seeds": int(group["seed"].nunique()),
-        }
-        for metric in metrics:
-            if metric in group.columns:
-                row[f"{metric}_mean"] = float(group[metric].mean())
-                row[f"{metric}_std"] = float(group[metric].std(ddof=1)) if len(group) > 1 else 0.0
-        rows.append(row)
-    return pd.DataFrame(rows).sort_values(["target_col", "modality", "order", "ablation_fraction"]).reset_index(drop=True)
-
-
 def plot_deletion_curve(curves: pd.DataFrame, output_path: Path, ylabel: str = "MAE increase") -> None:
     import matplotlib.pyplot as plt
 
@@ -456,273 +360,6 @@ def plot_deletion_curve(curves: pd.DataFrame, output_path: Path, ylabel: str = "
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path)
     plt.close(fig)
-
-
-def plot_deletion_curve_errorbar(curves: pd.DataFrame, output_path: Path, ylabel: str = "MAE increase") -> None:
-    import matplotlib.pyplot as plt
-
-    fig, ax = plt.subplots(figsize=(5.2, 3.6))
-    for order, group in curves.groupby("order", sort=False):
-        group = group.sort_values("ablation_fraction")
-        x = group["ablation_fraction"].to_numpy()
-        y = group["delta_mae_mean"].to_numpy()
-        std = group["delta_mae_std"].fillna(0.0).to_numpy()
-        color = DELETION_CURVE_COLORS.get(str(order))
-        ax.plot(
-            x,
-            y,
-            marker="o",
-            linewidth=2.0,
-            color=color,
-            label=order,
-        )
-        ax.fill_between(x, y - std, y + std, alpha=0.18, color=color)
-    ax.axhline(0, linestyle="--", linewidth=1.0, color="black")
-    ax.set_xlabel("Deleted feature fraction")
-    ax.set_ylabel(ylabel)
-    ax.legend(frameon=False)
-    ax.spines[["top", "right"]].set_visible(False)
-    ax.grid(alpha=0.25)
-    fig.tight_layout()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path)
-    plt.close(fig)
-
-
-def compute_seed_deletion_curves_from_permutation_matrix(
-    target_col: str,
-    seed: int,
-    input_root: Path,
-    processed_root: Path,
-    split_dir: Path,
-    checkpoint_path: Path | None,
-    split: str = "test",
-    sample_index: int = 0,
-    max_samples: int = 100,
-    device_name: str = "cpu",
-) -> dict[str, pd.DataFrame]:
-    selected, tabs, rdfs, graphs, y_true = _load_samples(
-        target_col,
-        seed,
-        split,
-        processed_root,
-        split_dir,
-        sample_index,
-        max_samples,
-    )
-    device = resolve_device(device_name)
-    model = _load_model(target_col, seed, checkpoint_path, tabs, rdfs, graphs, device)
-    seed_root = input_root / target_col / f"seed_{seed}"
-    return {
-        "composition": compute_tabular_or_rdf_deletion_curve(
-            target_col,
-            "composition",
-            seed_root / "composition_permutation" / "permutation_importance_summary.csv",
-            model,
-            tabs,
-            rdfs,
-            graphs,
-            y_true,
-            device,
-            seed=seed,
-        ).assign(seed=seed),
-        "rdf": compute_tabular_or_rdf_deletion_curve(
-            target_col,
-            "rdf",
-            seed_root / "rdf_permutation" / "permutation_importance_summary.csv",
-            model,
-            tabs,
-            rdfs,
-            graphs,
-            y_true,
-            device,
-            seed=seed,
-        ).assign(seed=seed),
-        "structure": compute_structure_whole_deletion_curve(
-            target_col,
-            model,
-            tabs,
-            rdfs,
-            graphs,
-            y_true,
-            device,
-        ).assign(seed=seed),
-        "overall": compute_overall_modality_deletion_curve(
-            target_col,
-            seed_root / "composition_permutation" / "permutation_importance_summary.csv",
-            seed_root / "rdf_permutation" / "permutation_importance_summary.csv",
-            seed_root / "structure_permutation" / "permutation_importance_summary.csv",
-            model,
-            tabs,
-            rdfs,
-            graphs,
-            y_true,
-            device,
-            seed=seed,
-        ).assign(seed=seed),
-    }
-
-
-def run_deletion_curve_errorbar_suite(
-    targets: tuple[str, ...],
-    seeds: list[int],
-    input_root: Path,
-    output_dir: Path,
-    results_dir: Path,
-    processed_root: Path,
-    split_dir: Path,
-    checkpoint_root: Path | None,
-    split: str = "test",
-    sample_index: int = 0,
-    max_samples: int = 100,
-    device_name: str = "cpu",
-) -> dict[str, Path]:
-    outputs = {}
-    results_dir.mkdir(parents=True, exist_ok=True)
-    for target_col in targets:
-        target_frames: dict[str, list[pd.DataFrame]] = {"composition": [], "rdf": [], "structure": [], "overall": []}
-        for seed in seeds:
-            checkpoint_path = (
-                checkpoint_root
-                / target_col
-                / "random_split"
-                / "checkpoints"
-                / DEFAULT_MODEL_NAME
-                / f"seed_{seed}"
-                / "model.pt"
-                if checkpoint_root is not None
-                else None
-            )
-            seed_curves = compute_seed_deletion_curves_from_permutation_matrix(
-                target_col=target_col,
-                seed=seed,
-                input_root=input_root,
-                processed_root=processed_root,
-                split_dir=split_dir,
-                checkpoint_path=checkpoint_path,
-                split=split,
-                sample_index=sample_index,
-                max_samples=max_samples,
-                device_name=device_name,
-            )
-            for modality, frame in seed_curves.items():
-                target_frames[modality].append(frame)
-        for modality, frames in target_frames.items():
-            all_seed = pd.concat(frames, ignore_index=True)
-            aggregate = aggregate_deletion_curves_across_seeds(all_seed)
-            target_result_dir = results_dir / target_col / modality
-            target_result_dir.mkdir(parents=True, exist_ok=True)
-            all_seed.to_csv(target_result_dir / "deletion_curve_all_seeds.csv", index=False)
-            aggregate.to_csv(target_result_dir / "deletion_curve_seed_summary.csv", index=False)
-            path = output_dir / f"{target_col}_{modality}_deletion_curve_errorbar.pdf"
-            plot_deletion_curve_errorbar(aggregate, path)
-            outputs[f"{target_col}_{modality}"] = path
-    return outputs
-
-
-def resolve_structure_atom_importance_path(root: Path, target_col: str, seed: int) -> Path:
-    candidates = [
-        root / target_col / f"seed_{seed}" / "structure_atom_ablation_importance.csv",
-        root / target_col / f"seed_{seed}" / "structure_atom_ablation" / "structure_atom_ablation_importance.csv",
-        root / target_col / "structure_atom_ablation" / f"seed_{seed}" / "structure_atom_ablation_importance.csv",
-        root / target_col / "structure_atom_ablation" / "structure_atom_ablation_importance.csv",
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return candidates[1]
-
-
-def run_structure_atom_deletion_errorbar_suite(
-    targets: tuple[str, ...],
-    seeds: list[int],
-    atom_importance_root: Path,
-    output_dir: Path,
-    results_dir: Path,
-    processed_root: Path,
-    split_dir: Path,
-    checkpoint_root: Path | None,
-    cif_dir: Path,
-    split: str = "test",
-    sample_index: int = 0,
-    max_samples: int = 100,
-    device_name: str = "cpu",
-    compute_missing: bool = False,
-    overwrite_atom_importance: bool = False,
-) -> dict[str, Path]:
-    outputs = {}
-    results_dir.mkdir(parents=True, exist_ok=True)
-    for target_col in targets:
-        frames = []
-        for seed in seeds:
-            checkpoint_path = (
-                checkpoint_root
-                / target_col
-                / "random_split"
-                / "checkpoints"
-                / DEFAULT_MODEL_NAME
-                / f"seed_{seed}"
-                / "model.pt"
-                if checkpoint_root is not None
-                else None
-            )
-            atom_path = resolve_structure_atom_importance_path(atom_importance_root, target_col, seed)
-            if compute_missing and (overwrite_atom_importance or not atom_path.exists()):
-                output_path = atom_importance_root / target_col / f"seed_{seed}" / "structure_atom_ablation"
-                run_structure_atom_ablation(
-                    target_col=target_col,
-                    seed=seed,
-                    split=split,
-                    processed_root=processed_root,
-                    split_dir=split_dir,
-                    checkpoint_path=checkpoint_path,
-                    cif_dir=cif_dir,
-                    output_dir=output_path,
-                    sample_index=sample_index,
-                    max_samples=max_samples,
-                    device_name=device_name,
-                    overwrite=overwrite_atom_importance,
-                )
-                atom_path = output_path / "structure_atom_ablation_importance.csv"
-            if not atom_path.exists():
-                raise FileNotFoundError(
-                    f"Missing atom importance for {target_col} seed {seed}: {atom_path}. "
-                    "Run with --compute_missing to generate it."
-                )
-            selected, tabs, rdfs, graphs, y_true = _load_samples(
-                target_col,
-                seed,
-                split,
-                processed_root,
-                split_dir,
-                sample_index,
-                max_samples,
-            )
-            device = resolve_device(device_name)
-            model = _load_model(target_col, seed, checkpoint_path, tabs, rdfs, graphs, device)
-            curve = compute_structure_atom_deletion_curve(
-                target_col=target_col,
-                atom_importance_path=atom_path,
-                model=model,
-                tabs=tabs,
-                rdfs=rdfs,
-                graphs=graphs,
-                sample_ids=selected["sample_id"].astype(str).tolist(),
-                y_true=y_true,
-                device=device,
-                seed=seed,
-            ).assign(seed=seed)
-            frames.append(curve)
-        all_seed = pd.concat(frames, ignore_index=True)
-        aggregate = aggregate_deletion_curves_across_seeds(all_seed)
-        target_results = results_dir / target_col
-        target_results.mkdir(parents=True, exist_ok=True)
-        all_seed.to_csv(target_results / f"{target_col}_structure_atom_deletion_curve_all_seeds.csv", index=False)
-        aggregate.to_csv(target_results / f"{target_col}_structure_atom_deletion_curve_seed_summary.csv", index=False)
-        output_path = output_dir / f"{target_col}_structure_atom_deletion_curve_errorbar.pdf"
-        plot_deletion_curve_errorbar(aggregate, output_path)
-        outputs[target_col] = output_path
-    return outputs
 
 
 def run_deletion_curve_suite(

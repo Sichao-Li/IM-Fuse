@@ -169,7 +169,7 @@ def _run_featurizer(
     command = [
         alignn_python,
         "-m",
-        "battery_fusion.experiments.alignn_pretrained_featurize",
+        "imfuse.experiments.alignn_pretrained_featurize",
         "--manifest",
         str(manifest_path),
         "--output_csv",

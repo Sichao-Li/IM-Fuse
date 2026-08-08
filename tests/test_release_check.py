@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from battery_fusion.release_check import run_release_check
+from imfuse.release_check import run_release_check
 
 
 class ReleaseCheckTests(unittest.TestCase):

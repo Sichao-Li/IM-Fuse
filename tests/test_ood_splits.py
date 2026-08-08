@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 
 import pandas as pd
 
-from battery_fusion.experiments.ood_splits import (
+from imfuse.experiments.ood_splits import (
     assign_composition_clusters,
     create_composition_cluster_holdout_splits,
     create_working_ion_holdout_splits,

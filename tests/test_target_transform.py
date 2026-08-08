@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from battery_fusion.training.target_transform import TargetTransform, fit_target_transform
+from imfuse.training.target_transform import TargetTransform, fit_target_transform
 
 
 class TargetTransformTests(unittest.TestCase):

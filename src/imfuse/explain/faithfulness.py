@@ -4,15 +4,14 @@ import argparse
 import json
 import logging
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 import pandas as pd
 import torch
 from torch import nn
 
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.explain.composition_importance import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.explain.composition_importance import (
     DEFAULT_MODEL_NAME,
     load_mid_tri_model,
     resolve_device,
@@ -20,7 +19,6 @@ from battery_fusion.explain.composition_importance import (
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_FRACTIONS = (0.0, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0)
-
 
 def ablation_schedule(n_features: int, fractions: list[float] | tuple[float, ...]) -> list[int]:
     """Convert ablation fractions to feature counts.
@@ -39,7 +37,6 @@ def ablation_schedule(n_features: int, fractions: list[float] | tuple[float, ...
         else:
             counts.append(max(1, min(n_features, int(np.ceil(n_features * fraction)))))
     return counts
-
 
 def ablation_indices(
     importance: np.ndarray | list[float],
@@ -64,7 +61,6 @@ def ablation_indices(
         raise ValueError(f"Unsupported ablation order {order!r}")
     return ranked[:n_remove].astype(int)
 
-
 def _predict_mid_tri(
     model: nn.Module,
     tab: torch.Tensor,
@@ -84,7 +80,6 @@ def _predict_mid_tri(
     }
     with torch.no_grad():
         return float(model(batch).detach().cpu().reshape(-1)[0])
-
 
 def _ablate_features(
     tab: torch.Tensor,
@@ -121,7 +116,6 @@ def _ablate_features(
         raise ValueError(f"Unsupported modality {modality!r}")
     return tab_out, rdf_out, graph_out
 
-
 def _infer_target_seed_split(frame: pd.DataFrame, target_col: str | None, seed: int | None, split: str | None) -> tuple[str, int, str]:
     if target_col is None:
         target_values = frame["target_col"].dropna().astype(str).unique()
@@ -139,7 +133,6 @@ def _infer_target_seed_split(frame: pd.DataFrame, target_col: str | None, seed: 
             raise ValueError("Could not infer split from importance CSV; pass --split")
         split = split_values[0]
     return target_col, int(seed), split
-
 
 def run_faithfulness_validation(
     importance_csv: Path,
@@ -271,11 +264,9 @@ def run_faithfulness_validation(
     LOGGER.info("Wrote %s and %s", curves_path, summary_path)
     return curves, summary
 
-
 def _auc(frame: pd.DataFrame, value_col: str) -> float:
     ordered = frame.sort_values("ablation_fraction")
     return float(np.trapz(ordered[value_col].to_numpy(), ordered["ablation_fraction"].to_numpy()))
-
 
 def summarize_faithfulness(curves: pd.DataFrame) -> pd.DataFrame:
     """Summarize deletion curves as per-order AUC and final deltas."""
@@ -318,45 +309,10 @@ def summarize_faithfulness(curves: pd.DataFrame) -> pd.DataFrame:
         summary["error_auc_minus_random"] = np.nan
     return summary
 
-
-def plot_faithfulness_curves(
-    curves: pd.DataFrame,
-    output_path: Path,
-    value_col: str = "prediction_delta",
-) -> None:
-    import matplotlib.pyplot as plt
-
-    grouped = (
-        curves.groupby(["order", "ablation_fraction"])[value_col]
-        .agg(["mean", "sem"])
-        .reset_index()
-    )
-    fig, ax = plt.subplots(figsize=(5.2, 3.6))
-    for order, group in grouped.groupby("order", sort=False):
-        ax.errorbar(
-            group["ablation_fraction"],
-            group["mean"],
-            yerr=group["sem"].fillna(0.0),
-            marker="o",
-            linewidth=1.8,
-            capsize=2.5,
-            label=order,
-        )
-    ax.set_xlabel("Ablated feature fraction")
-    ax.set_ylabel("Prediction change" if value_col == "prediction_delta" else "Error change")
-    ax.legend(frameon=False)
-    ax.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path)
-    plt.close(fig)
-
-
 def _parse_fractions(values: list[str] | None) -> list[float]:
     if not values:
         return list(DEFAULT_FRACTIONS)
     return [float(value) for value in values]
-
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate explanation faithfulness by importance-guided ablation.")
@@ -374,7 +330,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--random_seed", type=int, default=0)
     parser.add_argument("--overwrite", action="store_true")
     return parser.parse_args()
-
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
@@ -395,7 +350,6 @@ def main() -> None:
         overwrite=args.overwrite,
     )
     print(summary.to_string(index=False))
-
 
 if __name__ == "__main__":
     main()

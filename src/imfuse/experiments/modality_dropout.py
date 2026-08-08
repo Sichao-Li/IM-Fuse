@@ -11,22 +11,23 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader, Subset
 
-from battery_fusion.experiments.publication import (
+from imfuse.experiments.publication import (
     PublicationTriDataset,
     TRI_TORCH_SPECS,
     build_torch_model,
     collate_tri,
     infer_tri_dims,
     resolve_device,
+    tri_adapter,
 )
-from battery_fusion.fusion.feature_store import ProcessedFeatureStore
-from battery_fusion.fusion.cgcnn_multimodal import (
+from imfuse.fusion.feature_store import ProcessedFeatureStore
+from imfuse.fusion.cgcnn_multimodal import (
     MultimodalEarlyFusionRegressor,
     MultimodalMidFusionRegressor,
 )
-from battery_fusion.training.metrics import regression_metrics
-from battery_fusion.training.target_transform import TargetTransform
-from battery_fusion.utils.chemistry_groups import load_assignments
+from imfuse.training.metrics import regression_metrics
+from imfuse.training.target_transform import TargetTransform
+from imfuse.utils.chemistry_groups import load_assignments
 
 LOGGER = logging.getLogger(__name__)
 CANONICAL_MODALITIES = ("tabular", "structure", "rdf")
@@ -67,30 +68,6 @@ def _load_run_config(checkpoint_path: Path) -> dict[str, Any]:
     if not config_path.exists():
         raise FileNotFoundError(f"Missing publication run config next to {checkpoint_path}")
     return json.loads(config_path.read_text())
-
-
-def _move_graph(
-    graph: tuple[torch.Tensor, torch.Tensor, torch.Tensor, list[torch.Tensor]],
-    device: torch.device,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, list[torch.Tensor]]:
-    atom_fea, nbr_fea, nbr_fea_idx, crystal_atom_idx = graph
-    return (
-        atom_fea.to(device),
-        nbr_fea.to(device),
-        nbr_fea_idx.to(device),
-        [idx.to(device) for idx in crystal_atom_idx],
-    )
-
-
-def _move_batch(batch: dict[str, Any], device: torch.device) -> tuple[dict[str, Any], torch.Tensor]:
-    return (
-        {
-            "tabular": batch["tabular"].to(device),
-            "rdf": batch["rdf"].to(device),
-            "structure": _move_graph(batch["structure"], device),
-        },
-        batch["target"].to(device),
-    )
 
 
 def masked_modality_forward(
@@ -195,7 +172,7 @@ def run_modality_dropout(
             y_pred_parts: list[torch.Tensor] = []
             with torch.no_grad():
                 for batch in loader:
-                    inputs, targets = _move_batch(batch, device_obj)
+                    inputs, targets = tri_adapter(batch, device_obj)
                     predictions = masked_modality_forward(model, inputs, condition.available_modalities)
                     sample_ids.extend(str(sample_id) for sample_id in batch["sample_id"])
                     y_true_parts.append(targets.detach().cpu())

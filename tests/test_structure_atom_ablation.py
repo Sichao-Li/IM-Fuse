@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from battery_fusion.explain.structure_ablation import summarize_atom_ablation, summarize_edge_ablation
+from imfuse.explain.structure_ablation import summarize_atom_ablation, summarize_edge_ablation
 
 
 class StructureAtomAblationTests(unittest.TestCase):
